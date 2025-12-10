@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CinémAzard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Suppression de html2canvas qui n'est plus utilisé -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
     <style>
@@ -194,7 +193,7 @@
                 <p id="filterDisplay" class="text-xs text-slate-400 font-mono mb-4">Bonne séance à toi!</p>
             </div>
 
-            <!-- MENU ANNÉE (Filtre supprimé, Menu Année pleine largeur) -->
+            <!-- MENU ANNÉE & RELANCE -->
             <div class="w-full max-w-lg px-4 mb-8 animate-fade-in z-20 relative">
                 <div class="w-full relative">
                     <select id="resultYearSelect" onchange="pickRandomMovies()" class="w-full h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl py-3 px-4 pl-10 appearance-none cursor-pointer transition-colors shadow-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
@@ -516,8 +515,6 @@
                  const d = document.getElementById(`desc-${index}`); if(d) d.textContent = "Info indisponible."; 
             }
         }
-
-        // Functions downloadTicket and downloadSummary removed as requested in previous steps
     </script>
 </body>
 </html>
