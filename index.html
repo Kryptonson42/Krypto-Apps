@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CinémAzard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- Suppression de html2canvas qui n'est plus utilisé -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
     <style>
@@ -29,10 +29,10 @@
 
         .loader {
             border: 3px solid rgba(255, 255, 255, 0.1);
-            width: 24px;
-            height: 24px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            border-left-color: #a855f7;
+            border-left-color: #00E054; /* Vert Letterboxd */
             animation: spin 1s ease infinite;
         }
 
@@ -43,16 +43,6 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        }
-
-        .drop-zone {
-            transition: all 0.3s ease;
-            border: 2px dashed #4b5563;
-            background-color: #14181c;
-        }
-        .drop-zone.dragover {
-            border-color: #00E054;
-            background-color: rgba(0, 224, 84, 0.1);
         }
 
         /* --- STYLES TICKET & ANIMATION --- */
@@ -204,28 +194,28 @@
                 <p id="filterDisplay" class="text-xs text-slate-400 font-mono mb-4">Bonne séance !</p>
             </div>
 
-            <!-- BOUTONS & MENU -->
+            <!-- BOUTONS & MENU (Au-dessus de la fente) -->
             <div class="w-full max-w-lg px-4 mb-8 animate-fade-in flex flex-col gap-4 z-20 relative">
                 
-                <!-- Menu Années Unique -->
-                <div class="w-full relative">
-                    <select id="resultYearSelect" onchange="pickRandomMovies()" class="w-full h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl py-3 px-4 pl-10 appearance-none cursor-pointer transition-colors shadow-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
-                            style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2399aabb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 1rem center; background-size: 0.65em auto;">
-                        <option value="all">📅 Changer d'année / Relancer</option>
-                    </select>
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                        <i class="fa-solid fa-calendar-days"></i>
+                <div class="flex gap-3 items-stretch">
+                    <!-- Bouton Nouveau -->
+                    <button onclick="showControls()" class="w-1/3 py-3 px-4 bg-[#445566] hover:bg-[#556677] rounded-xl text-sm font-medium text-slate-200 hover:text-white transition-colors border border-[#567] uppercase tracking-wide">
+                        <i class="fa-solid fa-sliders mr-2"></i>Filtres
+                    </button>
+                    
+                    <!-- Menu Années -->
+                    <div class="w-2/3 relative">
+                        <select id="resultYearSelect" onchange="pickRandomMovies()" class="w-full h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl px-4 pl-10 appearance-none cursor-pointer transition-colors shadow-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
+                                style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2399aabb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 1rem center; background-size: 0.65em auto;">
+                            <option value="all">📅 Changer d'année / Relancer</option>
+                        </select>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <button onclick="downloadTicket()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2 border border-slate-600 shadow-md group">
-                        <i class="fa-solid fa-image text-orange-400 group-hover:text-orange-300"></i> Sauvegarder Ticket
-                    </button>
-                    <button onclick="downloadSummary()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2 border border-slate-600 shadow-md group">
-                        <i class="fa-solid fa-file-lines text-blue-400 group-hover:text-blue-300"></i> Sauvegarder Résumé
-                    </button>
-                </div>
+                <!-- Boutons de téléchargement supprimés ici -->
             </div>
 
             <!-- Fente + Conteneur Ticket -->
@@ -278,7 +268,22 @@
             } catch (error) {
                 console.error("Erreur chargement CSV:", error);
                 loader.classList.add('hidden');
-                errorMsg.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2"></i>Erreur : ${error.message}<br><span class="text-xs mt-2 block opacity-70">Assurez-vous que le fichier <strong>watchlist.csv</strong> est bien présent dans le dossier du site.</span>`;
+                // Message plus technique pour le debug si besoin, mais utilisateur averti
+                errorMsg.innerHTML = `
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl text-red-400"></i>
+                        <span class="font-bold">Erreur de chargement</span>
+                        <span>Impossible de lire le fichier <code>${CSV_FILENAME}</code>.</span>
+                    </div>
+                    <div class="text-xs mt-3 text-slate-400 text-left bg-black/20 p-3 rounded">
+                        <strong>Conseils :</strong>
+                        <ul class="list-disc pl-4 mt-1 space-y-1">
+                            <li>Vérifiez que le fichier se nomme exactement <code>watchlist.csv</code></li>
+                            <li>Vérifiez qu'il est placé dans le même dossier que ce fichier HTML</li>
+                            <li>Si vous ouvrez ce fichier localement, certains navigateurs bloquent l'accès aux fichiers (CORS). Essayez via un serveur local ou VS Code Live Server.</li>
+                        </ul>
+                    </div>
+                `;
                 errorMsg.classList.remove('hidden');
             }
         }
@@ -334,6 +339,13 @@
 
             uploadSelect.innerHTML = optionsStr;
             resultSelect.innerHTML = optionsStr; 
+        }
+
+        function showControls() {
+            document.getElementById('resultsArea').classList.add('hidden');
+            document.getElementById('controlsArea').classList.remove('hidden');
+            // Reset scroll
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // --- PICKER ---
@@ -514,30 +526,6 @@
             } catch { 
                  const d = document.getElementById(`desc-${index}`); if(d) d.textContent = "Info indisponible."; 
             }
-        }
-
-        function downloadTicket() {
-            const ticketElement = document.querySelector('.ticket');
-            if (!ticketElement) return;
-            const originalShadow = ticketElement.style.boxShadow;
-            ticketElement.style.boxShadow = 'none';
-            html2canvas(ticketElement, { useCORS: true, scale: 2, backgroundColor: null, allowTaint: true }).then(canvas => {
-                ticketElement.style.boxShadow = originalShadow; 
-                const link = document.createElement('a');
-                link.download = `CinemAzard_${currentMovieData.Name.replace(/[^a-z0-9]/gi, '_')}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            }).catch(err => alert("Erreur lors de la création de l'image."));
-        }
-
-        function downloadSummary() {
-            if (!currentMovieData) return;
-            const content = `🎬 CINEMAZARD\nTITRE : ${currentMovieData.Name}\nANNÉE : ${currentMovieData.Year}\nLIEN : ${currentMovieData["Letterboxd URI"]}\n\nRÉSUMÉ :\n${currentMovieData.synopsis || "N/A"}`;
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Resume_${currentMovieData.Name.replace(/[^a-z0-9]/gi, '_')}.txt`;
-            link.click();
         }
     </script>
 </body>
