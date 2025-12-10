@@ -11,7 +11,8 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #14181c; /* Gris Letterboxd */
+            /* Couleur de fond exacte de Letterboxd (Gris Sombre) */
+            background-color: #14181c; 
         }
         
         .cinema-title {
@@ -59,8 +60,10 @@
         
         .slot-machine-container {
             position: relative;
+            /* On garde l'overflow hidden pour cacher le ticket AVANT qu'il sorte */
             overflow: hidden; 
             padding-top: 20px;
+            /* Grand padding bas pour que le ticket sorti soit visible entièrement */
             padding-bottom: 120px; 
             width: 100%;
             display: flex;
@@ -79,7 +82,7 @@
             border-radius: 0 0 10px 10px;
             border-bottom: 2px solid #2c3440;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-            z-index: 50; 
+            z-index: 50; /* Au dessus du ticket pour l'effet de sortie */
         }
 
         @keyframes printTicket {
@@ -98,7 +101,7 @@
             width: 100%;
             max-width: 320px;
             transform: translateY(-120%);
-            z-index: 10;
+            z-index: 10; /* Derrière la fente (z-50) mais devant le fond */
         }
         
         .ticket.printing {
@@ -146,12 +149,14 @@
 
     <div class="max-w-5xl mx-auto px-4 pt-8 pb-32 min-h-screen flex flex-col items-center">
         
-        <!-- Header : FLEXBOX pour un centrage parfait -->
+        <!-- Header -->
         <header class="flex flex-col items-center justify-center mb-8 mt-4 w-full">
-            <!-- Logo Imgur Rond -->
-            <div class="mb-4 rounded-full overflow-hidden w-24 h-24 shadow-lg shadow-black/50 border border-white/5 bg-[#14181c]">
-                <img src="https://i.imgur.com/Cz0LzIT.png" alt="Logo CinémAzard" class="w-full h-full object-cover">
+            <!-- Logo Imgur Rond - CLIQUABLE -->
+            <div onclick="if(watchlist.length > 0) pickRandomMovies()" title="Relancer le tirage"
+                 class="mb-4 rounded-full overflow-hidden w-24 h-24 shadow-lg shadow-black/50 border border-white/5 bg-[#14181c] cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group">
+                <img src="https://i.imgur.com/Cz0LzIT.png" alt="Logo CinémAzard" class="w-full h-full object-cover group-hover:brightness-110 transition-all">
             </div>
+            
             <!-- Titre Dégradé -->
             <h1 class="cinema-title text-5xl md:text-7xl font-bold bg-clip-text text-transparent mb-2 text-center"
                 style="background-image: linear-gradient(to right, #FF8000, #00E054, #40BCF4);">
@@ -181,7 +186,7 @@
                 </div>
 
                 <div class="space-y-4 max-w-sm mx-auto">
-                    <!-- Filtre Année -->
+                    <!-- Filtre Année (Initial) -->
                     <div class="text-left bg-[#14181c] p-4 rounded-lg border border-white/5">
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Année de sortie (Optionnel)</label>
                         <select id="yearSelect" class="w-full bg-[#2c3440] border border-[#456] text-white text-sm rounded-md p-3 cursor-pointer hover:bg-[#343e4d] transition-colors focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none">
@@ -211,23 +216,32 @@
                 <p id="filterDisplay" class="text-xs text-slate-400 font-mono mb-4">Bonne séance !</p>
             </div>
 
-            <!-- Boutons de Gestion (AU-DESSUS DE LA FENTE) -->
+            <!-- BOUTONS DE GESTION & MENU ANNÉE -->
             <div class="w-full max-w-lg px-4 mb-8 animate-fade-in flex flex-col gap-4 z-20 relative">
                 
-                <div class="flex gap-3">
-                    <button onclick="resetApp()" class="flex-1 py-3 px-4 bg-[#445566] hover:bg-[#556677] rounded-md text-sm font-medium text-slate-200 hover:text-white transition-colors border border-[#567] uppercase tracking-wide">
+                <div class="flex gap-3 items-stretch">
+                    <!-- Bouton Nouveau -->
+                    <button onclick="resetApp()" class="w-1/3 py-3 px-4 bg-[#445566] hover:bg-[#556677] rounded-xl text-sm font-medium text-slate-200 hover:text-white transition-colors border border-[#567] uppercase tracking-wide">
                         <i class="fa-solid fa-rotate-left mr-2"></i>Nouveau
                     </button>
-                    <button onclick="pickRandomMovies()" class="flex-1 py-3 px-4 bg-[#00b020] hover:bg-[#00e054] rounded-md text-sm font-bold text-white transition-all shadow-lg uppercase tracking-wide">
-                        <i class="fa-solid fa-shuffle mr-2"></i>Relancer
-                    </button>
+                    
+                    <!-- Menu Déroulant Années (Gris Clair, style harmonisé) -->
+                    <div class="w-2/3 relative">
+                        <select id="resultYearSelect" onchange="pickRandomMovies()" class="w-full h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl px-4 pl-10 appearance-none cursor-pointer transition-colors shadow-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
+                                style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2399aabb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 1rem center; background-size: 0.65em auto;">
+                            <option value="all">📅 Changer d'année / Relancer</option>
+                        </select>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex gap-3">
-                    <button onclick="downloadTicket()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-2 border border-[#456] shadow-md group">
+                    <button onclick="downloadTicket()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2 border border-slate-600 shadow-md group">
                         <i class="fa-solid fa-image text-orange-400 group-hover:text-orange-300"></i> Sauvegarder Ticket
                     </button>
-                    <button onclick="downloadSummary()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-2 border border-[#456] shadow-md group">
+                    <button onclick="downloadSummary()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2 border border-slate-600 shadow-md group">
                         <i class="fa-solid fa-file-lines text-blue-400 group-hover:text-blue-300"></i> Sauvegarder Résumé
                     </button>
                 </div>
@@ -299,13 +313,21 @@
 
         // --- UI LOGIC ---
         function populateYearSelect(movies) {
-            const select = document.getElementById('yearSelect');
-            select.innerHTML = '<option value="all">📅 Toutes les années</option>';
+            const uploadSelect = document.getElementById('yearSelect');
+            const resultSelect = document.getElementById('resultYearSelect');
+            
+            const htmlOptions = '<option value="all">📅 Toutes les années</option>';
+            
             const years = [...new Set(movies.map(m => m.Year))].filter(y => !isNaN(y) && y <= CURRENT_YEAR).sort((a, b) => b - a);
+            
+            // Création des options
+            let optionsStr = htmlOptions;
             years.forEach(year => {
-                const option = document.createElement('option');
-                option.value = year; option.textContent = year; select.appendChild(option);
+                optionsStr += `<option value="${year}">${year}</option>`;
             });
+
+            uploadSelect.innerHTML = optionsStr;
+            resultSelect.innerHTML = optionsStr; // Populate le menu du bas aussi
         }
 
         function showSuccess(count) {
@@ -334,12 +356,21 @@
 
         // --- PICKER ---
         async function pickRandomMovies() {
-            const year = document.getElementById('yearSelect').value;
+            // Déterminer quel select utiliser
+            const isResultView = !document.getElementById('resultsArea').classList.contains('hidden');
+            const selectId = isResultView ? 'resultYearSelect' : 'yearSelect';
+            const year = document.getElementById(selectId).value;
+            
+            // Sync les selects pour la cohérence
+            if (isResultView) document.getElementById('yearSelect').value = year;
+            else document.getElementById('resultYearSelect').value = year;
+
             let candidates = watchlist.filter(m => (!m.Year || m.Year <= CURRENT_YEAR));
             if (year !== 'all') candidates = candidates.filter(m => m.Year == year);
 
             if (candidates.length === 0) { showError("Aucun film pour cette sélection."); return; }
 
+            document.getElementById('filterDisplay').textContent = `Année : ${year !== 'all' ? year : 'Aléatoire'}`;
             document.getElementById('uploadArea').classList.add('hidden');
             document.getElementById('resultsArea').classList.remove('hidden');
             
