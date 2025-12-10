@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -11,8 +11,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            /* Couleur de fond exacte de Letterboxd (Gris Sombre) */
-            background-color: #14181c; 
+            background-color: #14181c; /* Gris Letterboxd */
         }
         
         .cinema-title {
@@ -60,10 +59,8 @@
         
         .slot-machine-container {
             position: relative;
-            /* On garde l'overflow hidden pour cacher le ticket AVANT qu'il sorte */
             overflow: hidden; 
             padding-top: 20px;
-            /* Grand padding bas pour que le ticket sorti soit visible entièrement */
             padding-bottom: 120px; 
             width: 100%;
             display: flex;
@@ -82,7 +79,7 @@
             border-radius: 0 0 10px 10px;
             border-bottom: 2px solid #2c3440;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-            z-index: 50; /* Au dessus du ticket pour l'effet de sortie */
+            z-index: 50; 
         }
 
         @keyframes printTicket {
@@ -101,7 +98,7 @@
             width: 100%;
             max-width: 320px;
             transform: translateY(-120%);
-            z-index: 10; /* Derrière la fente (z-50) mais devant le fond */
+            z-index: 10;
         }
         
         .ticket.printing {
@@ -151,21 +148,20 @@
         
         <!-- Header -->
         <header class="flex flex-col items-center justify-center mb-8 mt-4 w-full">
-            <!-- Logo Imgur Rond - CLIQUABLE -->
+            <!-- Logo Cliquable -->
             <div onclick="if(watchlist.length > 0) pickRandomMovies()" title="Relancer le tirage"
                  class="mb-4 rounded-full overflow-hidden w-24 h-24 shadow-lg shadow-black/50 border border-white/5 bg-[#14181c] cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group">
                 <img src="https://i.imgur.com/Cz0LzIT.png" alt="Logo CinémAzard" class="w-full h-full object-cover group-hover:brightness-110 transition-all">
             </div>
             
-            <!-- Titre Dégradé -->
             <h1 class="cinema-title text-5xl md:text-7xl font-bold bg-clip-text text-transparent mb-2 text-center"
                 style="background-image: linear-gradient(to right, #FF8000, #00E054, #40BCF4);">
                 CinémAzard
             </h1>
-            <p class="text-slate-400 text-sm text-center">Le hasard fait bien les films ✨</p>
+            <p class="text-slate-400 text-sm text-center">Le hasard fait bien les films</p>
         </header>
 
-        <!-- Zone d'import (CSV UNIQUEMENT) -->
+        <!-- Zone d'import -->
         <div id="uploadArea" class="glass-panel rounded-lg p-6 md:p-8 shadow-xl mb-10 max-w-lg w-full text-center transition-all duration-300">
             
             <div id="dropZone" class="drop-zone rounded-lg p-8 cursor-pointer group hover:border-green-500/50 hover:bg-[#1e2329]">
@@ -186,7 +182,7 @@
                 </div>
 
                 <div class="space-y-4 max-w-sm mx-auto">
-                    <!-- Filtre Année (Initial) -->
+                    <!-- Filtre Année -->
                     <div class="text-left bg-[#14181c] p-4 rounded-lg border border-white/5">
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Année de sortie (Optionnel)</label>
                         <select id="yearSelect" class="w-full bg-[#2c3440] border border-[#456] text-white text-sm rounded-md p-3 cursor-pointer hover:bg-[#343e4d] transition-colors focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none">
@@ -216,7 +212,7 @@
                 <p id="filterDisplay" class="text-xs text-slate-400 font-mono mb-4">Bonne séance !</p>
             </div>
 
-            <!-- BOUTONS DE GESTION & MENU ANNÉE -->
+            <!-- BOUTONS & MENU -->
             <div class="w-full max-w-lg px-4 mb-8 animate-fade-in flex flex-col gap-4 z-20 relative">
                 
                 <div class="flex gap-3 items-stretch">
@@ -225,7 +221,7 @@
                         <i class="fa-solid fa-rotate-left mr-2"></i>Nouveau
                     </button>
                     
-                    <!-- Menu Déroulant Années (Gris Clair, style harmonisé) -->
+                    <!-- Menu Années -->
                     <div class="w-2/3 relative">
                         <select id="resultYearSelect" onchange="pickRandomMovies()" class="w-full h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl px-4 pl-10 appearance-none cursor-pointer transition-colors shadow-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
                                 style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2399aabb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 1rem center; background-size: 0.65em auto;">
@@ -370,7 +366,9 @@
 
             if (candidates.length === 0) { showError("Aucun film pour cette sélection."); return; }
 
-            document.getElementById('filterDisplay').textContent = `Année : ${year !== 'all' ? year : 'Aléatoire'}`;
+            // MODIFICATION ICI : Texte fixe "Bonne séance !"
+            document.getElementById('filterDisplay').textContent = "Bonne séance !";
+            
             document.getElementById('uploadArea').classList.add('hidden');
             document.getElementById('resultsArea').classList.remove('hidden');
             
@@ -432,6 +430,7 @@
                             <span class="text-white font-mono text-base px-3 py-1 bg-black rounded-lg ml-2 whitespace-nowrap shadow-md">${movie.Year || 'N/A'}</span>
                         </div>
                         
+                        <!-- Zone de synopsis avec tooltip au survol -->
                         <div class="relative min-h-[4rem] group/desc">
                             <p id="desc-${index}" class="text-sm text-gray-600 line-clamp-3 leading-relaxed cursor-help">
                                 Chargement des infos TMDB...
