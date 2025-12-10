@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CinemAzard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
     <style>
@@ -15,9 +16,9 @@
         
         .barcode {
             font-family: 'Libre Barcode 39 Text', cursive;
-            font-size: 32px; /* Un peu plus grand pour le style */
+            font-size: 32px;
             letter-spacing: 2px;
-            transform: scaleY(1.2); /* Étirer un peu les barres */
+            transform: scaleY(1.2);
         }
 
         .loader {
@@ -87,8 +88,16 @@
             box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7);
             width: 100%;
             max-width: 320px;
+            /* L'animation est ajoutée dynamiquement en JS */
+            transform: translateY(-110%); 
+        }
+        
+        .ticket.printing {
             animation: printTicket 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-            transform: translateY(-110%);
+        }
+        
+        .ticket.visible {
+            transform: translateY(0);
         }
 
         .ticket::before, .ticket::after {
@@ -101,6 +110,22 @@
         .perforation {
             position: absolute; top: 66%; left: 10px; right: 10px;
             border-top: 3px dashed rgba(255, 255, 255, 0.15); z-index: 10;
+        }
+        
+        /* Onglets */
+        .tab-btn {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            color: #94a3b8;
+        }
+        .tab-btn:hover { color: white; }
+        .tab-btn.active {
+            border-color: #a855f7;
+            color: #c084fc;
         }
         
         select {
@@ -128,20 +153,48 @@
         </header>
 
         <!-- Zone d'import -->
-        <div id="uploadArea" class="glass-panel rounded-2xl p-8 shadow-xl mb-10 max-w-lg mx-auto w-full text-center transition-all duration-300">
+        <div id="uploadArea" class="glass-panel rounded-2xl p-6 md:p-8 shadow-xl mb-10 max-w-lg mx-auto w-full text-center transition-all duration-300">
             
-            <!-- Étape 1 : CSV -->
-            <div id="dropZone" class="drop-zone rounded-xl p-8 cursor-pointer group hover:border-purple-500/50 hover:bg-slate-800/50">
-                <input type="file" id="csvFileInput" accept=".csv" class="hidden">
-                <i class="fa-solid fa-file-csv text-4xl text-slate-500 group-hover:text-purple-400 mb-4 transition-colors"></i>
-                <h3 class="text-lg font-semibold text-white mb-2">1. Importe ta Watchlist</h3>
-                <p class="text-slate-400 text-sm mb-4">Glisse le fichier .csv exporté de Letterboxd</p>
-                <button class="bg-slate-700 hover:bg-slate-600 text-white text-sm py-2 px-4 rounded-lg transition-colors">
-                    Choisir le CSV
+            <!-- Choix de la méthode d'import -->
+            <div class="flex mb-6 border-b border-white/10">
+                <button onclick="switchMethod('csv')" id="tab-csv" class="tab-btn active">
+                    <i class="fa-solid fa-file-csv mr-2"></i>Fichier CSV
+                </button>
+                <button onclick="switchMethod('link')" id="tab-link" class="tab-btn">
+                    <i class="fa-solid fa-link mr-2"></i>Lien Profil
                 </button>
             </div>
 
-            <!-- Étape 2 : Config -->
+            <!-- CONTENU : IMPORT CSV -->
+            <div id="method-csv" class="space-y-6">
+                <div id="dropZone" class="drop-zone rounded-xl p-8 cursor-pointer group hover:border-purple-500/50 hover:bg-slate-800/50">
+                    <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500 group-hover:text-purple-400 mb-4 transition-colors"></i>
+                    <h3 class="text-lg font-semibold text-white mb-1">Importer Watchlist</h3>
+                    <p class="text-slate-400 text-xs mb-4">Le fichier .csv exporté de Letterboxd</p>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors">
+                        Parcourir
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTENU : IMPORT LIEN -->
+            <div id="method-link" class="hidden space-y-6">
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-white/5 text-left">
+                    <label for="usernameInput" class="block text-xs font-bold text-blue-300 uppercase tracking-wide mb-2">Ton Pseudo Letterboxd</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="usernameInput" placeholder="ex: kryptonson" 
+                            class="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                            onkeypress="if(event.key === 'Enter') fetchFromRSS()">
+                        <button onclick="fetchFromRSS()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 rounded-lg transition-colors">
+                            <i class="fa-solid fa-search"></i>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2 italic">* Récupère les ~50 derniers ajouts de ta Watchlist publique.</p>
+                </div>
+            </div>
+
+            <!-- Étape 2 : Config & Lancement (Caché au début) -->
             <div id="fileStats" class="hidden mt-6 animate-fade-in border-t border-white/10 pt-6">
                 <div class="flex items-center justify-center gap-2 text-green-400 mb-6 font-medium">
                     <i class="fa-solid fa-check-circle"></i>
@@ -151,7 +204,7 @@
                 <div class="space-y-4 max-w-sm mx-auto">
                     <!-- Filtre Année -->
                     <div class="text-left bg-slate-800/50 p-4 rounded-xl border border-white/5">
-                        <label class="block text-xs font-bold text-purple-300 uppercase tracking-wide mb-2">2. Année de sortie (Optionnel)</label>
+                        <label class="block text-xs font-bold text-purple-300 uppercase tracking-wide mb-2">Année de sortie (Optionnel)</label>
                         <select id="yearSelect" class="w-full bg-slate-700 border border-slate-600 text-white text-sm rounded-lg p-3 cursor-pointer hover:bg-slate-600 transition-colors">
                             <option value="all">📅 Toutes les années</option>
                         </select>
@@ -164,6 +217,12 @@
                     </button>
                 </div>
             </div>
+            
+            <div id="loader" class="hidden flex-col items-center justify-center mt-6">
+                <div class="loader mb-2"></div>
+                <p class="text-xs text-purple-300 animate-pulse">Connexion à Letterboxd/TMDB...</p>
+            </div>
+            
             <div id="errorMsg" class="hidden mt-4 p-3 bg-red-900/50 border border-red-500/50 rounded-lg text-red-200 text-sm"></div>
         </div>
 
@@ -189,37 +248,129 @@
 
             <!-- Fente + Conteneur Ticket -->
             <div class="slot-machine-container">
-                <!-- La fente visuelle -->
                 <div class="slot-opening"></div>
-                
-                <!-- Ticket injecté ici -->
                 <div id="movieGrid" class="flex justify-center w-full"></div>
+            </div>
+            
+            <!-- Boutons de Téléchargement -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-6 animate-fade-in" style="animation-delay: 1.5s">
+                <button onclick="downloadTicket()" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 border border-slate-500 shadow-lg">
+                    <i class="fa-solid fa-image text-purple-400"></i> Télécharger le Ticket
+                </button>
+                <button onclick="downloadSummary()" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 border border-slate-500 shadow-lg">
+                    <i class="fa-solid fa-file-lines text-blue-400"></i> Télécharger le Résumé
+                </button>
             </div>
 
         </div>
 
         <!-- Footer -->
         <footer class="mt-auto pt-10 pb-4 text-center text-slate-600 text-xs">
-            <p>CinemAzard • Alimenté par Letterboxd</p>
+            <p>CinemAzard • Données via Letterboxd & TMDB</p>
         </footer>
     </div>
 
     <script>
         // CONFIG
-        const CURRENT_YEAR = 2025; 
+        const CURRENT_YEAR = 2025;
+        const TMDB_API_KEY = '91ff43ba698cce948e8dd82332a6ed99';
 
         // STATE
         let watchlist = [];
+        let currentMovieData = null; // Pour stocker les infos du film élu (pour le résumé)
         
-        // Fallback Data
-        const DEMO_DATA = [
-            { Name: "Saint Maud", Year: 2019, "Letterboxd URI": "https://boxd.it/l8QA" },
-            { Name: "The Night House", Year: 2020, "Letterboxd URI": "https://boxd.it/jZze" },
-            { Name: "Paris Is Burning", Year: 1990, "Letterboxd URI": "https://boxd.it/1jzg" },
-            { Name: "Y Tu Mamá También", Year: 2001, "Letterboxd URI": "https://boxd.it/28QM" },
-            { Name: "Laurence Anyways", Year: 2012, "Letterboxd URI": "https://boxd.it/3HQu" },
-            { Name: "Top Gun: Maverick", Year: 2022, "Letterboxd URI": "https://boxd.it/cjr4" }
-        ];
+        // --- TABS HANDLING ---
+        function switchMethod(method) {
+            const tabCsv = document.getElementById('tab-csv');
+            const tabLink = document.getElementById('tab-link');
+            const divCsv = document.getElementById('method-csv');
+            const divLink = document.getElementById('method-link');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            errorMsg.classList.add('hidden');
+
+            if (method === 'csv') {
+                tabCsv.classList.add('active');
+                tabLink.classList.remove('active');
+                divCsv.classList.remove('hidden');
+                divLink.classList.add('hidden');
+            } else {
+                tabLink.classList.add('active');
+                tabCsv.classList.remove('active');
+                divLink.classList.remove('hidden');
+                divCsv.classList.add('hidden');
+            }
+        }
+
+        // --- RSS FETCHING ---
+        async function fetchFromRSS() {
+            const usernameInput = document.getElementById('usernameInput');
+            let username = usernameInput.value.trim();
+            const loader = document.getElementById('loader');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            const urlMatch = username.match(/letterboxd\.com\/([^\/]+)/);
+            if (urlMatch && urlMatch[1]) username = urlMatch[1];
+            username = username.replace(/\/$/, "");
+
+            if (!username) {
+                showError("Merci d'entrer un pseudo valide.");
+                return;
+            }
+
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            errorMsg.classList.add('hidden');
+
+            try {
+                const rssUrl = `https://letterboxd.com/${username}/watchlist/rss/`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error("Erreur réseau.");
+                const data = await response.json();
+                if (!data.contents) throw new Error("Réponse vide.");
+
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                const items = xmlDoc.querySelectorAll("item");
+
+                if (items.length === 0) {
+                    if (data.contents.includes("Page not found")) throw new Error("Compte introuvable.");
+                    throw new Error("Aucun film trouvé (Profil privé ou liste vide ?).");
+                }
+
+                const parsedMovies = Array.from(items).map(item => {
+                    const titleRaw = item.querySelector("title")?.textContent || "Titre Inconnu";
+                    const link = item.querySelector("link")?.textContent || "#";
+                    let name = titleRaw;
+                    let year = null;
+                    
+                    const yearMatch = titleRaw.match(/, (\d{4})$/);
+                    if (yearMatch) {
+                        year = parseInt(yearMatch[1]);
+                        name = titleRaw.replace(/, \d{4}$/, "").trim();
+                    }
+
+                    return {
+                        Name: name,
+                        Year: year,
+                        "Letterboxd URI": link
+                    };
+                });
+
+                watchlist = parsedMovies;
+                showSuccess(parsedMovies.length);
+                populateYearSelect(parsedMovies);
+
+            } catch (error) {
+                console.error(error);
+                showError(error.message || "Erreur lors de la récupération du profil.");
+            } finally {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+            }
+        }
 
         // --- CSV HANDLING ---
         const dropZone = document.getElementById('dropZone');
@@ -259,9 +410,10 @@
                 watchlist = result;
                 showSuccess(result.length);
                 populateYearSelect(result);
-            } else { showError("Aucun film trouvé."); }
+            } else { showError("Aucun film trouvé dans le CSV."); }
         }
 
+        // --- SHARED UI LOGIC ---
         function populateYearSelect(movies) {
             const select = document.getElementById('yearSelect');
             select.innerHTML = '<option value="all">📅 Toutes les années</option>';
@@ -274,6 +426,9 @@
 
         function showSuccess(count) {
             document.getElementById('dropZone').classList.add('hidden');
+            document.getElementById('method-link').classList.add('hidden');
+            document.querySelector('.tab-btn').parentNode.classList.add('hidden'); 
+            
             document.getElementById('errorMsg').classList.add('hidden');
             const stats = document.getElementById('fileStats');
             document.getElementById('movieCount').textContent = `${count} films chargés`;
@@ -288,61 +443,56 @@
 
         function resetApp() {
             watchlist = [];
+            currentMovieData = null;
             document.getElementById('resultsArea').classList.add('hidden');
             document.getElementById('fileStats').classList.add('hidden');
-            document.getElementById('dropZone').classList.remove('hidden');
+            
+            document.querySelector('.tab-btn').parentNode.classList.remove('hidden');
+            const activeTab = document.querySelector('.tab-btn.active').id;
+            if (activeTab === 'tab-csv') document.getElementById('dropZone').classList.remove('hidden');
+            else document.getElementById('method-link').classList.remove('hidden');
+            
             document.getElementById('uploadArea').classList.remove('hidden');
             document.getElementById('csvFileInput').value = '';
+            document.getElementById('usernameInput').value = '';
         }
 
         // --- PICKER ---
         async function pickRandomMovies() {
-            const list = watchlist.length > 0 ? watchlist : DEMO_DATA;
             const year = document.getElementById('yearSelect').value;
-            
-            // Filtre année + exclusion films futurs
-            let candidates = list.filter(m => (!m.Year || m.Year <= CURRENT_YEAR));
+            let candidates = watchlist.filter(m => (!m.Year || m.Year <= CURRENT_YEAR));
             if (year !== 'all') candidates = candidates.filter(m => m.Year == year);
 
-            if (candidates.length === 0) { showError("Aucun film pour cette année."); return; }
+            if (candidates.length === 0) { showError("Aucun film pour cette sélection."); return; }
 
             document.getElementById('filterDisplay').textContent = `Année : ${year !== 'all' ? year : 'Aléatoire'}`;
-            
-            // Masquer la zone d'upload pour afficher les résultats
             document.getElementById('uploadArea').classList.add('hidden');
             document.getElementById('resultsArea').classList.remove('hidden');
             if(window.innerWidth < 768) document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth' });
 
-            displayResults(candidates);
-        }
-
-        // --- DISPLAY ---
-        function displayResults(movies) {
-            // SÉLECTION DU FILM UNIQUE
-            const shuffled = [...movies].sort(() => 0.5 - Math.random());
-            const selectedMovie = shuffled[0]; // On prend juste le premier
+            const shuffled = [...candidates].sort(() => 0.5 - Math.random());
+            const selectedMovie = shuffled[0];
+            currentMovieData = { ...selectedMovie, synopsis: "Chargement..." }; 
             
             const grid = document.getElementById('movieGrid');
             grid.innerHTML = '';
-            
-            // On crée un seul ticket
             const ticket = createTicket(selectedMovie, 0);
             grid.appendChild(ticket);
             
-            fetchMovieData(selectedMovie["Letterboxd URI"], 0);
+            // On utilise la nouvelle fonction TMDB
+            fetchMovieData(selectedMovie, 0);
         }
 
+        // --- DISPLAY & ANIMATION ---
         function generateRandomBarcode() {
             let result = '';
-            for (let i = 0; i < 12; i++) {
-                result += Math.floor(Math.random() * 10);
-            }
+            for (let i = 0; i < 12; i++) result += Math.floor(Math.random() * 10);
             return result;
         }
 
         function createTicket(movie, index) {
             const ticket = document.createElement('div');
-            ticket.className = 'ticket group';
+            ticket.className = 'ticket printing group';
             
             const gradients = [ 
                 'from-purple-800 to-blue-900', 
@@ -351,14 +501,11 @@
                 'from-slate-900 to-purple-900'
             ];
             const grad = gradients[Math.floor(Math.random() * gradients.length)];
-
-            // Code barres aléatoire
             const randomCode = generateRandomBarcode();
-            const bottomContent = `<div class="barcode opacity-60 text-slate-400 select-none tracking-widest text-2xl">${randomCode}</div>`;
 
             ticket.innerHTML = `
                 <div class="relative h-[65%] bg-gradient-to-br ${grad} overflow-hidden min-h-[400px]">
-                    <img id="img-${index}" src="" alt="Affiche" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 z-10">
+                    <img id="img-${index}" src="" crossorigin="anonymous" alt="Affiche" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 z-10">
                     <div class="absolute inset-0 flex items-center justify-center p-6 text-center z-0">
                         <div><i class="fa-solid fa-film text-6xl text-white/10 mb-4 block"></i><h3 class="text-2xl font-bold text-white/40">${movie.Name}</h3></div>
                     </div>
@@ -374,17 +521,14 @@
                             <span class="text-blue-300 font-mono text-base px-3 py-1 bg-slate-700 rounded-lg ml-2 whitespace-nowrap">${movie.Year || 'N/A'}</span>
                         </div>
                         <div class="relative min-h-[4rem]">
-                            <p id="desc-${index}" class="text-sm text-slate-300 line-clamp-4 leading-relaxed italic">Chargement du synopsis...</p>
+                            <p id="desc-${index}" class="text-sm text-slate-300 line-clamp-4 leading-relaxed italic">Chargement des infos TMDB...</p>
                         </div>
                     </div>
-                    
                     <div class="flex justify-between items-center mt-6 border-t border-white/10 pt-5">
-                        <!-- Code Barres Aléatoire -->
                         <div class="flex-shrink-0">
-                            ${bottomContent}
+                            <div class="barcode opacity-60 text-slate-400 select-none tracking-widest text-2xl">${randomCode}</div>
                         </div>
-                        
-                        <a href="${movie['Letterboxd URI']}" target="_blank" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-sm font-bold text-white transition-all uppercase tracking-wide flex items-center gap-2 shadow-lg shadow-purple-900/30 group-hover:bg-purple-500">
+                        <a href="${movie['Letterboxd URI']}" target="_blank" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-sm font-bold text-white transition-all uppercase tracking-wide flex items-center gap-2 shadow-lg shadow-purple-900/30 group-hover:bg-purple-500 no-print">
                             Voir fiche <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
@@ -393,7 +537,57 @@
             return ticket;
         }
 
-        async function fetchMovieData(url, index) {
+        // --- NEW TMDB FETCHING LOGIC ---
+        async function fetchMovieData(movie, index) {
+            try {
+                // 1. Recherche via TMDB API
+                let searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(movie.Name)}&language=fr-FR&include_adult=false`;
+                if (movie.Year) searchUrl += `&year=${movie.Year}`;
+
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    const bestMatch = data.results[0]; // On prend le meilleur résultat
+                    
+                    // Récupération de l'image
+                    if (bestMatch.poster_path) {
+                        const imageUrl = `https://image.tmdb.org/t/p/w500${bestMatch.poster_path}`;
+                        const imgEl = document.getElementById(`img-${index}`);
+                        if (imgEl) {
+                            imgEl.src = imageUrl;
+                            imgEl.onload = () => imgEl.classList.remove('opacity-0');
+                        }
+                    }
+
+                    // Récupération du synopsis
+                    const overview = bestMatch.overview || "Résumé non disponible en français.";
+                    const descEl = document.getElementById(`desc-${index}`);
+                    if (descEl) {
+                        descEl.textContent = overview;
+                        descEl.classList.remove('italic');
+                    }
+                    
+                    // Stocker pour le téléchargement
+                    if (currentMovieData) {
+                        currentMovieData.synopsis = overview;
+                    }
+
+                } else {
+                    // Fallback vers l'ancienne méthode si TMDB ne trouve rien
+                    console.warn("Film non trouvé sur TMDB, tentative via proxy Letterboxd...");
+                    fetchMovieDataLegacy(movie["Letterboxd URI"], index);
+                }
+
+            } catch (error) {
+                console.error("Erreur TMDB", error);
+                // Fallback ultime
+                fetchMovieDataLegacy(movie["Letterboxd URI"], index);
+            }
+        }
+
+        // Fonction de secours (Ancienne méthode scraping)
+        async function fetchMovieDataLegacy(url, index) {
             try {
                 const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
                 const res = await fetch(proxy);
@@ -415,12 +609,62 @@
                 let synopsis = "Synopsis indisponible.";
                 const desc = data.contents.match(/meta property="og:description" content="(.*?)"/);
                 if (desc) synopsis = desc[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#x27;/g, "'");
+                
                 const descEl = document.getElementById(`desc-${index}`);
                 if (descEl) { descEl.textContent = synopsis; descEl.classList.remove('italic'); }
+                if (currentMovieData) currentMovieData.synopsis = synopsis;
                 
             } catch { 
                  const d = document.getElementById(`desc-${index}`); if(d) d.textContent = "Info indisponible."; 
             }
+        }
+
+        // --- DOWNLOAD FUNCTIONS ---
+        
+        function downloadTicket() {
+            const ticketElement = document.querySelector('.ticket');
+            if (!ticketElement) return;
+
+            // Retirer l'ombre pour une capture propre
+            const originalShadow = ticketElement.style.boxShadow;
+            ticketElement.style.boxShadow = 'none';
+            
+            html2canvas(ticketElement, {
+                useCORS: true, // Crucial pour les images TMDB
+                scale: 2,
+                backgroundColor: null,
+                allowTaint: true
+            }).then(canvas => {
+                ticketElement.style.boxShadow = originalShadow; // Restaurer
+                
+                const link = document.createElement('a');
+                link.download = `CinemAzard_${currentMovieData.Name.replace(/[^a-z0-9]/gi, '_')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error("Erreur capture", err);
+                alert("Erreur lors de la création de l'image. Vérifiez votre connexion.");
+            });
+        }
+
+        function downloadSummary() {
+            if (!currentMovieData) return;
+            
+            const content = `🎬 CINEMAZARD - SÉLECTION DU JOUR\n` +
+                            `=================================\n\n` +
+                            `TITRE : ${currentMovieData.Name.toUpperCase()}\n` +
+                            `ANNÉE : ${currentMovieData.Year || 'N/A'}\n` +
+                            `LIEN LETTERBOXD : ${currentMovieData["Letterboxd URI"]}\n\n` +
+                            `--- RÉSUMÉ ---\n` +
+                            `${currentMovieData.synopsis || "Non disponible"}\n\n` +
+                            `=================================\n` +
+                            `Généré le ${new Date().toLocaleDateString()} par CinemAzard`;
+                            
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Resume_${currentMovieData.Name.replace(/[^a-z0-9]/gi, '_')}.txt`;
+            link.click();
         }
     </script>
 </body>
