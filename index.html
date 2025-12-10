@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CinemAzard</title>
+    <title>CinémAzard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #0f172a; /* Slate 900 */
+            background-color: #14181c; /* Gris Letterboxd */
+        }
+        
+        .cinema-title {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.1em;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
         }
         
         .barcode {
@@ -33,30 +39,33 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(44, 52, 64, 0.7);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
         .drop-zone {
             transition: all 0.3s ease;
             border: 2px dashed #4b5563;
+            background-color: #14181c;
         }
         .drop-zone.dragover {
-            border-color: #a855f7;
-            background-color: rgba(168, 85, 247, 0.1);
+            border-color: #00E054;
+            background-color: rgba(0, 224, 84, 0.1);
         }
 
         /* --- STYLES TICKET & ANIMATION --- */
         
         .slot-machine-container {
             position: relative;
-            overflow: hidden;
+            overflow: hidden; 
             padding-top: 20px;
+            padding-bottom: 120px; 
             width: 100%;
             display: flex;
             justify-content: center;
-            padding-bottom: 20px;
+            min-height: 600px; 
         }
 
         .slot-opening {
@@ -65,16 +74,16 @@
             left: 50%;
             transform: translateX(-50%);
             width: 340px;
-            height: 15px;
-            background: #020617;
-            border-radius: 10px;
-            border-bottom: 2px solid #334155;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
-            z-index: 50;
+            height: 20px;
+            background: linear-gradient(to bottom, #080a0c 0%, #14181c 100%);
+            border-radius: 0 0 10px 10px;
+            border-bottom: 2px solid #2c3440;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            z-index: 50; 
         }
 
         @keyframes printTicket {
-            0% { transform: translateY(-110%); }
+            0% { transform: translateY(-120%); }
             100% { transform: translateY(0); }
         }
 
@@ -88,113 +97,83 @@
             box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7);
             width: 100%;
             max-width: 320px;
-            /* L'animation est ajoutée dynamiquement en JS */
-            transform: translateY(-110%); 
+            transform: translateY(-120%);
+            z-index: 10;
         }
         
         .ticket.printing {
-            animation: printTicket 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-        
-        .ticket.visible {
-            transform: translateY(0);
+            animation: printTicket 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .ticket::before, .ticket::after {
             content: ''; position: absolute; top: 66%; width: 26px; height: 26px;
-            background-color: #0f172a; border-radius: 50%; z-index: 20;
+            background-color: #14181c; 
+            border-radius: 50%; z-index: 20;
         }
         .ticket::before { left: -13px; }
         .ticket::after { right: -13px; }
         
         .perforation {
             position: absolute; top: 66%; left: 10px; right: 10px;
-            border-top: 3px dashed rgba(255, 255, 255, 0.15); z-index: 10;
+            border-top: 3px dashed #cbd5e1;
+            z-index: 10;
         }
         
-        /* Onglets */
-        .tab-btn {
-            flex: 1;
-            padding: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            border-bottom: 2px solid transparent;
-            color: #94a3b8;
-        }
-        .tab-btn:hover { color: white; }
-        .tab-btn.active {
-            border-color: #a855f7;
-            color: #c084fc;
-        }
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         select {
             appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23a855f7%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2399aabb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat;
             background-position: right 1rem center;
             background-size: 0.65em auto;
         }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0) scale(1); } }
     </style>
 </head>
-<body class="min-h-screen text-white bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 selection:bg-purple-500 selection:text-white">
+<body class="min-h-screen text-slate-100 selection:bg-green-500 selection:text-white">
 
-    <div class="max-w-5xl mx-auto px-4 py-8 min-h-screen flex flex-col">
+    <div class="max-w-5xl mx-auto px-4 pt-8 pb-32 min-h-screen flex flex-col items-center">
         
-        <!-- Header -->
-        <header class="text-center mb-8 mt-4">
-            <div class="inline-block p-3 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 mb-4 shadow-lg shadow-purple-900/50 relative">
-                <i class="fa-solid fa-film text-3xl text-white"></i>
+        <!-- Header : FLEXBOX pour un centrage parfait -->
+        <header class="flex flex-col items-center justify-center mb-8 mt-4 w-full">
+            <!-- Logo Imgur Rond -->
+            <div class="mb-4 rounded-full overflow-hidden w-24 h-24 shadow-lg shadow-black/50 border border-white/5 bg-[#14181c]">
+                <img src="https://i.imgur.com/Cz0LzIT.png" alt="Logo CinémAzard" class="w-full h-full object-cover">
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-2">
-                CinemAzard
+            <!-- Titre Dégradé -->
+            <h1 class="cinema-title text-5xl md:text-7xl font-bold bg-clip-text text-transparent mb-2 text-center"
+                style="background-image: linear-gradient(to right, #FF8000, #00E054, #40BCF4);">
+                CinémAzard
             </h1>
-            <p class="text-slate-400 text-sm">Le hasard fait bien les films ✨</p>
+            <p class="text-slate-400 text-sm text-center">Le hasard fait bien les films ✨</p>
         </header>
 
-        <!-- Zone d'import -->
-        <div id="uploadArea" class="glass-panel rounded-2xl p-6 md:p-8 shadow-xl mb-10 max-w-lg mx-auto w-full text-center transition-all duration-300">
+        <!-- Zone d'import (CSV UNIQUEMENT) -->
+        <div id="uploadArea" class="glass-panel rounded-lg p-6 md:p-8 shadow-xl mb-10 max-w-lg w-full text-center transition-all duration-300">
             
-            <!-- Choix de la méthode d'import -->
-            <div class="flex mb-6 border-b border-white/10">
-                <button onclick="switchMethod('csv')" id="tab-csv" class="tab-btn active">
-                    <i class="fa-solid fa-file-csv mr-2"></i>Fichier CSV
+            <div id="dropZone" class="drop-zone rounded-lg p-8 cursor-pointer group hover:border-green-500/50 hover:bg-[#1e2329]">
+                <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                <i class="fa-solid fa-file-csv text-4xl text-slate-500 group-hover:text-green-400 mb-4 transition-colors"></i>
+                <h3 class="text-lg font-semibold text-white mb-1">Importer Watchlist</h3>
+                <p class="text-slate-400 text-xs mb-4">Le fichier .csv exporté de Letterboxd</p>
+                <button class="bg-[#445566] hover:bg-[#556677] text-white text-xs font-bold py-2 px-4 rounded-md transition-colors uppercase tracking-wider">
+                    Parcourir
                 </button>
-                <button onclick="switchMethod('link')" id="tab-link" class="tab-btn">
-                    <i class="fa-solid fa-link mr-2"></i>Lien Profil
-                </button>
             </div>
 
-            <!-- CONTENU : IMPORT CSV -->
-            <div id="method-csv" class="space-y-6">
-                <div id="dropZone" class="drop-zone rounded-xl p-8 cursor-pointer group hover:border-purple-500/50 hover:bg-slate-800/50">
-                    <input type="file" id="csvFileInput" accept=".csv" class="hidden">
-                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500 group-hover:text-purple-400 mb-4 transition-colors"></i>
-                    <h3 class="text-lg font-semibold text-white mb-1">Importer Watchlist</h3>
-                    <p class="text-slate-400 text-xs mb-4">Le fichier .csv exporté de Letterboxd</p>
-                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors">
-                        Parcourir
-                    </button>
-                </div>
-            </div>
-
-            <!-- CONTENU : IMPORT LIEN -->
-            <div id="method-link" class="hidden space-y-6">
-                <div class="bg-slate-800/50 p-6 rounded-xl border border-white/5 text-left">
-                    <label for="usernameInput" class="block text-xs font-bold text-blue-300 uppercase tracking-wide mb-2">Ton Pseudo Letterboxd</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="usernameInput" placeholder="ex: kryptonson" 
-                            class="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                            onkeypress="if(event.key === 'Enter') fetchFromRSS()">
-                        <button onclick="fetchFromRSS()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 rounded-lg transition-colors">
-                            <i class="fa-solid fa-search"></i>
-                        </button>
-                    </div>
-                    <p class="text-[10px] text-slate-500 mt-2 italic">* Récupère les ~50 derniers ajouts de ta Watchlist publique.</p>
-                </div>
-            </div>
-
-            <!-- Étape 2 : Config & Lancement (Caché au début) -->
+            <!-- Config & Lancement -->
             <div id="fileStats" class="hidden mt-6 animate-fade-in border-t border-white/10 pt-6">
                 <div class="flex items-center justify-center gap-2 text-green-400 mb-6 font-medium">
                     <i class="fa-solid fa-check-circle"></i>
@@ -203,24 +182,19 @@
 
                 <div class="space-y-4 max-w-sm mx-auto">
                     <!-- Filtre Année -->
-                    <div class="text-left bg-slate-800/50 p-4 rounded-xl border border-white/5">
-                        <label class="block text-xs font-bold text-purple-300 uppercase tracking-wide mb-2">Année de sortie (Optionnel)</label>
-                        <select id="yearSelect" class="w-full bg-slate-700 border border-slate-600 text-white text-sm rounded-lg p-3 cursor-pointer hover:bg-slate-600 transition-colors">
+                    <div class="text-left bg-[#14181c] p-4 rounded-lg border border-white/5">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Année de sortie (Optionnel)</label>
+                        <select id="yearSelect" class="w-full bg-[#2c3440] border border-[#456] text-white text-sm rounded-md p-3 cursor-pointer hover:bg-[#343e4d] transition-colors focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none">
                             <option value="all">📅 Toutes les années</option>
                         </select>
                     </div>
                     
                     <button onclick="pickRandomMovies()" id="classicBtn"
-                        class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-900/30 transform hover:scale-105 active:scale-95">
+                        class="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-3 px-6 rounded-md transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-900/30 transform hover:scale-105 active:scale-95 uppercase tracking-wide">
                         <span>Tirer un film au sort</span>
                         <i class="fa-solid fa-dice"></i>
                     </button>
                 </div>
-            </div>
-            
-            <div id="loader" class="hidden flex-col items-center justify-center mt-6">
-                <div class="loader mb-2"></div>
-                <p class="text-xs text-purple-300 animate-pulse">Connexion à Letterboxd/TMDB...</p>
             </div>
             
             <div id="errorMsg" class="hidden mt-4 p-3 bg-red-900/50 border border-red-500/50 rounded-lg text-red-200 text-sm"></div>
@@ -228,20 +202,33 @@
 
         <!-- Zone des Résultats -->
         <div id="resultsArea" class="hidden flex-grow flex flex-col items-center w-full">
-            <div class="w-full max-w-2xl flex flex-col md:flex-row justify-between items-center mb-4 gap-4 px-4 z-10">
-                <div class="text-center md:text-left">
-                    <h2 class="text-3xl font-bold text-white mb-1">
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Ticket</span> Sélectionné
-                    </h2>
-                    <p id="filterDisplay" class="text-xs text-slate-400 font-mono">Bonne séance !</p>
-                </div>
+            
+            <!-- Titre "Ticket Sélectionné" -->
+            <div class="text-center mb-6 z-10 relative">
+                <h2 class="text-3xl font-bold text-white mb-1">
+                    Ticket Sélectionné
+                </h2>
+                <p id="filterDisplay" class="text-xs text-slate-400 font-mono mb-4">Bonne séance !</p>
+            </div>
+
+            <!-- Boutons de Gestion (AU-DESSUS DE LA FENTE) -->
+            <div class="w-full max-w-lg px-4 mb-8 animate-fade-in flex flex-col gap-4 z-20 relative">
                 
                 <div class="flex gap-3">
-                    <button onclick="resetApp()" class="py-2 px-4 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm text-slate-300 hover:text-white transition-colors border border-slate-700">
-                        <i class="fa-solid fa-upload mr-2"></i>Nouveau
+                    <button onclick="resetApp()" class="flex-1 py-3 px-4 bg-[#445566] hover:bg-[#556677] rounded-md text-sm font-medium text-slate-200 hover:text-white transition-colors border border-[#567] uppercase tracking-wide">
+                        <i class="fa-solid fa-rotate-left mr-2"></i>Nouveau
                     </button>
-                    <button onclick="pickRandomMovies()" class="py-2 px-4 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm text-blue-300 hover:text-white transition-colors border border-slate-700 hover:border-blue-500/50 shadow-lg shadow-blue-900/20">
-                        <i class="fa-solid fa-rotate-right mr-2"></i>Relancer
+                    <button onclick="pickRandomMovies()" class="flex-1 py-3 px-4 bg-[#00b020] hover:bg-[#00e054] rounded-md text-sm font-bold text-white transition-all shadow-lg uppercase tracking-wide">
+                        <i class="fa-solid fa-shuffle mr-2"></i>Relancer
+                    </button>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="downloadTicket()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-2 border border-[#456] shadow-md group">
+                        <i class="fa-solid fa-image text-orange-400 group-hover:text-orange-300"></i> Sauvegarder Ticket
+                    </button>
+                    <button onclick="downloadSummary()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-2 border border-[#456] shadow-md group">
+                        <i class="fa-solid fa-file-lines text-blue-400 group-hover:text-blue-300"></i> Sauvegarder Résumé
                     </button>
                 </div>
             </div>
@@ -249,24 +236,14 @@
             <!-- Fente + Conteneur Ticket -->
             <div class="slot-machine-container">
                 <div class="slot-opening"></div>
-                <div id="movieGrid" class="flex justify-center w-full"></div>
-            </div>
-            
-            <!-- Boutons de Téléchargement -->
-            <div class="flex flex-col sm:flex-row gap-4 mt-6 animate-fade-in" style="animation-delay: 1.5s">
-                <button onclick="downloadTicket()" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 border border-slate-500 shadow-lg">
-                    <i class="fa-solid fa-image text-purple-400"></i> Télécharger le Ticket
-                </button>
-                <button onclick="downloadSummary()" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 border border-slate-500 shadow-lg">
-                    <i class="fa-solid fa-file-lines text-blue-400"></i> Télécharger le Résumé
-                </button>
+                <div id="movieGrid" class="flex justify-center w-full pt-4"></div>
             </div>
 
         </div>
 
         <!-- Footer -->
-        <footer class="mt-auto pt-10 pb-4 text-center text-slate-600 text-xs">
-            <p>CinemAzard • Données via Letterboxd & TMDB</p>
+        <footer class="mt-auto pt-10 pb-4 text-center text-slate-500 text-xs w-full">
+            <p>CinémAzard • Données via Letterboxd & TMDB</p>
         </footer>
     </div>
 
@@ -277,101 +254,8 @@
 
         // STATE
         let watchlist = [];
-        let currentMovieData = null; // Pour stocker les infos du film élu (pour le résumé)
+        let currentMovieData = null; 
         
-        // --- TABS HANDLING ---
-        function switchMethod(method) {
-            const tabCsv = document.getElementById('tab-csv');
-            const tabLink = document.getElementById('tab-link');
-            const divCsv = document.getElementById('method-csv');
-            const divLink = document.getElementById('method-link');
-            const errorMsg = document.getElementById('errorMsg');
-            
-            errorMsg.classList.add('hidden');
-
-            if (method === 'csv') {
-                tabCsv.classList.add('active');
-                tabLink.classList.remove('active');
-                divCsv.classList.remove('hidden');
-                divLink.classList.add('hidden');
-            } else {
-                tabLink.classList.add('active');
-                tabCsv.classList.remove('active');
-                divLink.classList.remove('hidden');
-                divCsv.classList.add('hidden');
-            }
-        }
-
-        // --- RSS FETCHING ---
-        async function fetchFromRSS() {
-            const usernameInput = document.getElementById('usernameInput');
-            let username = usernameInput.value.trim();
-            const loader = document.getElementById('loader');
-            const errorMsg = document.getElementById('errorMsg');
-            
-            const urlMatch = username.match(/letterboxd\.com\/([^\/]+)/);
-            if (urlMatch && urlMatch[1]) username = urlMatch[1];
-            username = username.replace(/\/$/, "");
-
-            if (!username) {
-                showError("Merci d'entrer un pseudo valide.");
-                return;
-            }
-
-            loader.classList.remove('hidden');
-            loader.classList.add('flex');
-            errorMsg.classList.add('hidden');
-
-            try {
-                const rssUrl = `https://letterboxd.com/${username}/watchlist/rss/`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error("Erreur réseau.");
-                const data = await response.json();
-                if (!data.contents) throw new Error("Réponse vide.");
-
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-                const items = xmlDoc.querySelectorAll("item");
-
-                if (items.length === 0) {
-                    if (data.contents.includes("Page not found")) throw new Error("Compte introuvable.");
-                    throw new Error("Aucun film trouvé (Profil privé ou liste vide ?).");
-                }
-
-                const parsedMovies = Array.from(items).map(item => {
-                    const titleRaw = item.querySelector("title")?.textContent || "Titre Inconnu";
-                    const link = item.querySelector("link")?.textContent || "#";
-                    let name = titleRaw;
-                    let year = null;
-                    
-                    const yearMatch = titleRaw.match(/, (\d{4})$/);
-                    if (yearMatch) {
-                        year = parseInt(yearMatch[1]);
-                        name = titleRaw.replace(/, \d{4}$/, "").trim();
-                    }
-
-                    return {
-                        Name: name,
-                        Year: year,
-                        "Letterboxd URI": link
-                    };
-                });
-
-                watchlist = parsedMovies;
-                showSuccess(parsedMovies.length);
-                populateYearSelect(parsedMovies);
-
-            } catch (error) {
-                console.error(error);
-                showError(error.message || "Erreur lors de la récupération du profil.");
-            } finally {
-                loader.classList.add('hidden');
-                loader.classList.remove('flex');
-            }
-        }
-
         // --- CSV HANDLING ---
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('csvFileInput');
@@ -413,7 +297,7 @@
             } else { showError("Aucun film trouvé dans le CSV."); }
         }
 
-        // --- SHARED UI LOGIC ---
+        // --- UI LOGIC ---
         function populateYearSelect(movies) {
             const select = document.getElementById('yearSelect');
             select.innerHTML = '<option value="all">📅 Toutes les années</option>';
@@ -426,9 +310,6 @@
 
         function showSuccess(count) {
             document.getElementById('dropZone').classList.add('hidden');
-            document.getElementById('method-link').classList.add('hidden');
-            document.querySelector('.tab-btn').parentNode.classList.add('hidden'); 
-            
             document.getElementById('errorMsg').classList.add('hidden');
             const stats = document.getElementById('fileStats');
             document.getElementById('movieCount').textContent = `${count} films chargés`;
@@ -446,15 +327,9 @@
             currentMovieData = null;
             document.getElementById('resultsArea').classList.add('hidden');
             document.getElementById('fileStats').classList.add('hidden');
-            
-            document.querySelector('.tab-btn').parentNode.classList.remove('hidden');
-            const activeTab = document.querySelector('.tab-btn.active').id;
-            if (activeTab === 'tab-csv') document.getElementById('dropZone').classList.remove('hidden');
-            else document.getElementById('method-link').classList.remove('hidden');
-            
+            document.getElementById('dropZone').classList.remove('hidden');
             document.getElementById('uploadArea').classList.remove('hidden');
             document.getElementById('csvFileInput').value = '';
-            document.getElementById('usernameInput').value = '';
         }
 
         // --- PICKER ---
@@ -465,10 +340,14 @@
 
             if (candidates.length === 0) { showError("Aucun film pour cette sélection."); return; }
 
-            document.getElementById('filterDisplay').textContent = `Année : ${year !== 'all' ? year : 'Aléatoire'}`;
             document.getElementById('uploadArea').classList.add('hidden');
             document.getElementById('resultsArea').classList.remove('hidden');
-            if(window.innerWidth < 768) document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth' });
+            
+            if(window.innerWidth < 768) {
+                setTimeout(() => {
+                    document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
 
             const shuffled = [...candidates].sort(() => 0.5 - Math.random());
             const selectedMovie = shuffled[0];
@@ -479,7 +358,6 @@
             const ticket = createTicket(selectedMovie, 0);
             grid.appendChild(ticket);
             
-            // On utilise la nouvelle fonction TMDB
             fetchMovieData(selectedMovie, 0);
         }
 
@@ -510,27 +388,32 @@
                         <div><i class="fa-solid fa-film text-6xl text-white/10 mb-4 block"></i><h3 class="text-2xl font-bold text-white/40">${movie.Name}</h3></div>
                     </div>
                     <div class="absolute top-4 left-4 z-20">
-                        <span class="px-3 py-1.5 bg-black/60 backdrop-blur-md text-xs font-bold uppercase tracking-wider rounded text-white border border-white/20 shadow-lg">Séance Unique</span>
+                        <span class="px-3 py-1.5 bg-black/60 backdrop-blur-md text-xs font-bold uppercase tracking-wider rounded text-white border border-white/20 shadow-lg">Salle 42</span>
                     </div>
                 </div>
                 <div class="perforation"></div>
-                <div class="h-[35%] bg-slate-800 p-8 flex flex-col justify-between relative pt-10">
+                <div class="h-[35%] bg-white p-8 flex flex-col justify-between relative pt-10">
                     <div>
                         <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-bold text-2xl leading-tight text-white line-clamp-2" title="${movie.Name}">${movie.Name}</h3>
-                            <span class="text-blue-300 font-mono text-base px-3 py-1 bg-slate-700 rounded-lg ml-2 whitespace-nowrap">${movie.Year || 'N/A'}</span>
+                            <a href="${movie['Letterboxd URI']}" target="_blank" class="font-bold text-2xl leading-tight text-gray-900 line-clamp-2 hover:text-purple-600 transition-colors" title="Voir sur Letterboxd">
+                                ${movie.Name}
+                            </a>
+                            <span class="text-white font-mono text-base px-3 py-1 bg-black rounded-lg ml-2 whitespace-nowrap shadow-md">${movie.Year || 'N/A'}</span>
                         </div>
-                        <div class="relative min-h-[4rem]">
-                            <p id="desc-${index}" class="text-sm text-slate-300 line-clamp-4 leading-relaxed italic">Chargement des infos TMDB...</p>
+                        
+                        <div class="relative min-h-[4rem] group/desc">
+                            <p id="desc-${index}" class="text-sm text-gray-600 line-clamp-3 leading-relaxed cursor-help">
+                                Chargement des infos TMDB...
+                            </p>
+                            <div id="full-desc-${index}" class="hidden group-hover/desc:block absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md p-4 shadow-xl border border-gray-200 rounded-lg z-50 max-h-[180px] overflow-y-auto text-sm text-gray-800 custom-scrollbar transform translate-y-2 transition-all">
+                                Chargement...
+                            </div>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center mt-6 border-t border-white/10 pt-5">
+                    <div class="flex justify-center items-center mt-6 border-t border-gray-200 pt-5">
                         <div class="flex-shrink-0">
-                            <div class="barcode opacity-60 text-slate-400 select-none tracking-widest text-2xl">${randomCode}</div>
+                            <div class="barcode text-black select-none tracking-widest text-2xl">${randomCode}</div>
                         </div>
-                        <a href="${movie['Letterboxd URI']}" target="_blank" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-sm font-bold text-white transition-all uppercase tracking-wide flex items-center gap-2 shadow-lg shadow-purple-900/30 group-hover:bg-purple-500 no-print">
-                            Voir fiche <i class="fa-solid fa-arrow-right"></i>
-                        </a>
                     </div>
                 </div>
             `;
@@ -540,7 +423,6 @@
         // --- NEW TMDB FETCHING LOGIC ---
         async function fetchMovieData(movie, index) {
             try {
-                // 1. Recherche via TMDB API
                 let searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(movie.Name)}&language=fr-FR&include_adult=false`;
                 if (movie.Year) searchUrl += `&year=${movie.Year}`;
 
@@ -548,9 +430,8 @@
                 const data = await response.json();
 
                 if (data.results && data.results.length > 0) {
-                    const bestMatch = data.results[0]; // On prend le meilleur résultat
+                    const bestMatch = data.results[0]; 
                     
-                    // Récupération de l'image
                     if (bestMatch.poster_path) {
                         const imageUrl = `https://image.tmdb.org/t/p/w500${bestMatch.poster_path}`;
                         const imgEl = document.getElementById(`img-${index}`);
@@ -560,33 +441,34 @@
                         }
                     }
 
-                    // Récupération du synopsis
                     const overview = bestMatch.overview || "Résumé non disponible en français.";
+                    
                     const descEl = document.getElementById(`desc-${index}`);
                     if (descEl) {
                         descEl.textContent = overview;
                         descEl.classList.remove('italic');
                     }
                     
-                    // Stocker pour le téléchargement
+                    const fullDescEl = document.getElementById(`full-desc-${index}`);
+                    if (fullDescEl) {
+                        fullDescEl.textContent = overview;
+                    }
+                    
                     if (currentMovieData) {
                         currentMovieData.synopsis = overview;
                     }
 
                 } else {
-                    // Fallback vers l'ancienne méthode si TMDB ne trouve rien
                     console.warn("Film non trouvé sur TMDB, tentative via proxy Letterboxd...");
                     fetchMovieDataLegacy(movie["Letterboxd URI"], index);
                 }
 
             } catch (error) {
                 console.error("Erreur TMDB", error);
-                // Fallback ultime
                 fetchMovieDataLegacy(movie["Letterboxd URI"], index);
             }
         }
 
-        // Fonction de secours (Ancienne méthode scraping)
         async function fetchMovieDataLegacy(url, index) {
             try {
                 const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
@@ -611,31 +493,40 @@
                 if (desc) synopsis = desc[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#x27;/g, "'");
                 
                 const descEl = document.getElementById(`desc-${index}`);
-                if (descEl) { descEl.textContent = synopsis; descEl.classList.remove('italic'); }
+                const fullDescEl = document.getElementById(`full-desc-${index}`);
+                
+                if (descEl) { 
+                    descEl.textContent = synopsis; 
+                    descEl.classList.remove('italic'); 
+                    descEl.classList.remove('text-slate-300');
+                    descEl.classList.add('text-gray-600');
+                }
+                if (fullDescEl) {
+                    fullDescEl.textContent = synopsis;
+                }
+                
                 if (currentMovieData) currentMovieData.synopsis = synopsis;
                 
             } catch { 
                  const d = document.getElementById(`desc-${index}`); if(d) d.textContent = "Info indisponible."; 
+                 const fd = document.getElementById(`full-desc-${index}`); if(fd) fd.textContent = "Info indisponible.";
             }
         }
 
-        // --- DOWNLOAD FUNCTIONS ---
-        
         function downloadTicket() {
             const ticketElement = document.querySelector('.ticket');
             if (!ticketElement) return;
 
-            // Retirer l'ombre pour une capture propre
             const originalShadow = ticketElement.style.boxShadow;
             ticketElement.style.boxShadow = 'none';
             
             html2canvas(ticketElement, {
-                useCORS: true, // Crucial pour les images TMDB
+                useCORS: true,
                 scale: 2,
                 backgroundColor: null,
                 allowTaint: true
             }).then(canvas => {
-                ticketElement.style.boxShadow = originalShadow; // Restaurer
+                ticketElement.style.boxShadow = originalShadow; 
                 
                 const link = document.createElement('a');
                 link.download = `CinemAzard_${currentMovieData.Name.replace(/[^a-z0-9]/gi, '_')}.png`;
