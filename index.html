@@ -188,34 +188,23 @@
             
             <!-- Titre "Ticket Sélectionné" -->
             <div class="text-center mb-6 z-10 relative">
-                <h2 class="text-3xl font-bold text-white mb-1">
+                <h2 class="text-xl font-bold text-white mb-1">
                     Ticket Sélectionné
                 </h2>
-                <p id="filterDisplay" class="text-xs text-slate-400 font-mono mb-4">Bonne séance !</p>
+                <p id="filterDisplay" class="text-xs text-slate-400 font-mono mb-4">Bonne séance à toi!</p>
             </div>
 
-            <!-- BOUTONS & MENU (Au-dessus de la fente) -->
-            <div class="w-full max-w-lg px-4 mb-8 animate-fade-in flex flex-col gap-4 z-20 relative">
-                
-                <div class="flex gap-3 items-stretch">
-                    <!-- Bouton Nouveau -->
-                    <button onclick="showControls()" class="w-1/3 py-3 px-4 bg-[#445566] hover:bg-[#556677] rounded-xl text-sm font-medium text-slate-200 hover:text-white transition-colors border border-[#567] uppercase tracking-wide">
-                        <i class="fa-solid fa-sliders mr-2"></i>Filtres
-                    </button>
-                    
-                    <!-- Menu Années -->
-                    <div class="w-2/3 relative">
-                        <select id="resultYearSelect" onchange="pickRandomMovies()" class="w-full h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl px-4 pl-10 appearance-none cursor-pointer transition-colors shadow-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
-                                style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2399aabb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 1rem center; background-size: 0.65em auto;">
-                            <option value="all">📅 Changer d'année / Relancer</option>
-                        </select>
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                            <i class="fa-solid fa-calendar-days"></i>
-                        </div>
+            <!-- MENU ANNÉE (Filtre supprimé, Menu Année pleine largeur) -->
+            <div class="w-full max-w-lg px-4 mb-8 animate-fade-in z-20 relative">
+                <div class="w-full relative">
+                    <select id="resultYearSelect" onchange="pickRandomMovies()" class="w-full h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl py-3 px-4 pl-10 appearance-none cursor-pointer transition-colors shadow-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none" 
+                            style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2399aabb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 1rem center; background-size: 0.65em auto;">
+                        <option value="all"> Changer d'année / Relancer</option>
+                    </select>
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-calendar-days"></i>
                     </div>
                 </div>
-
-                <!-- Boutons de téléchargement supprimés ici -->
             </div>
 
             <!-- Fente + Conteneur Ticket -->
@@ -527,6 +516,8 @@
                  const d = document.getElementById(`desc-${index}`); if(d) d.textContent = "Info indisponible."; 
             }
         }
+
+        // Functions downloadTicket and downloadSummary removed as requested in previous steps
     </script>
 </body>
 </html>
