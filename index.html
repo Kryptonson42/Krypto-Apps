@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CinémAzard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
     <style>
@@ -224,15 +223,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="flex gap-3">
-                    <button onclick="downloadTicket()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2 border border-slate-600 shadow-md group">
-                        <i class="fa-solid fa-image text-orange-400 group-hover:text-orange-300"></i> Sauvegarder Ticket
-                    </button>
-                    <button onclick="downloadSummary()" class="flex-1 bg-[#2c3440] hover:bg-[#384252] text-slate-300 hover:text-white px-4 py-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2 border border-slate-600 shadow-md group">
-                        <i class="fa-solid fa-file-lines text-blue-400 group-hover:text-blue-300"></i> Sauvegarder Résumé
-                    </button>
-                </div>
             </div>
 
             <!-- Fente + Conteneur Ticket -->
@@ -253,7 +243,7 @@
         // CONFIG
         const CURRENT_YEAR = 2025;
         const TMDB_API_KEY = '91ff43ba698cce948e8dd82332a6ed99';
-        const CSV_FILENAME = 'watchlist.csv'; // Fichier à la racine
+        const CSV_FILENAME = 'watchlist.csv'; 
 
         // STATE
         let watchlist = [];
@@ -527,30 +517,6 @@
             } catch { 
                  const d = document.getElementById(`desc-${index}`); if(d) d.textContent = "Info indisponible."; 
             }
-        }
-
-        function downloadTicket() {
-            const ticketElement = document.querySelector('.ticket');
-            if (!ticketElement) return;
-            const originalShadow = ticketElement.style.boxShadow;
-            ticketElement.style.boxShadow = 'none';
-            html2canvas(ticketElement, { useCORS: true, scale: 2, backgroundColor: null, allowTaint: true }).then(canvas => {
-                ticketElement.style.boxShadow = originalShadow; 
-                const link = document.createElement('a');
-                link.download = `CinemAzard_${currentMovieData.Name.replace(/[^a-z0-9]/gi, '_')}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            }).catch(err => alert("Erreur lors de la création de l'image."));
-        }
-
-        function downloadSummary() {
-            if (!currentMovieData) return;
-            const content = `🎬 CINEMAZARD\nTITRE : ${currentMovieData.Name}\nANNÉE : ${currentMovieData.Year}\nLIEN : ${currentMovieData["Letterboxd URI"]}\n\nRÉSUMÉ :\n${currentMovieData.synopsis || "N/A"}`;
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Resume_${currentMovieData.Name.replace(/[^a-z0-9]/gi, '_')}.txt`;
-            link.click();
         }
     </script>
 </body>
