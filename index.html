@@ -141,7 +141,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-100 selection:bg-green-500 selection:text-white relative">
+<body class="min-h-screen text-slate-100 Salle 42:bg-green-500 Salle 42:text-white relative">
 
     <!-- Widget Profil Letterboxd -->
     <div class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-[#2c3440] p-1.5 md:p-2 rounded-full border border-white/10 shadow-xl transition-all duration-300 hover:border-white/30">
@@ -276,7 +276,7 @@
         const CURRENT_YEAR = new Date().getFullYear();
         const TMDB_API_KEY = '91ff43ba698cce948e8dd82332a6ed99';
         const CSV_FILENAME = 'watchlist.csv'; 
-        const DEFAULT_USERNAME = 'TON_PSEUDO_ICI'; // <-- Insère ton pseudo Letterboxd ici entre les guillemets
+        const DEFAULT_USERNAME = 'kryptonson'; // <-- Insère ton pseudo Letterboxd ici entre les guillemets
 
         // ETAT (STATE)
         let watchlist = [];
@@ -290,7 +290,7 @@
             
             // Restauration du pseudo utilisateur ou utilisation du pseudo par défaut
             const savedUser = localStorage.getItem('lbxUsername') || DEFAULT_USERNAME;
-            if(savedUser && savedUser !== 'TON_PSEUDO_ICI') {
+            if(savedUser && savedUser !== 'kryptonson') {
                 document.getElementById('lbxUsername').value = savedUser;
                 fetchWatchedCount();
             }
