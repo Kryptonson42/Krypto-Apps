@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CinémAzard V2</title>
+    <title>CinémAzard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #14181c; /* Gris profond Letterboxd */
+            background-color: #14181c; /* Gris officiel de Letterboxd */
         }
         
         .cinema-title {
@@ -32,8 +32,8 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            border-left-color: #00E054; /* Vert Letterboxd */
-            animation: spin 1s linear infinite;
+            border-left-color: #00E054; /* Vert officiel de Letterboxd */
+            animation: spin 1s ease infinite;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -108,7 +108,6 @@
             z-index: 10;
         }
         
-        /* Custom Scrollbar */
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
@@ -118,7 +117,7 @@
             appearance: none;
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2399aabb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat;
-            background-position: right 1rem center;
+            background-position: right 0.75rem center;
             background-size: 0.65em auto;
         }
         
@@ -129,45 +128,28 @@
         }
 
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0) scale(1); } }
-
-        /* Animation de recherche de film */
-        .searching-pulse {
-            animation: pulse-border 1.5s infinite;
-        }
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(0, 224, 84, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(0, 224, 84, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 224, 84, 0); }
-        }
     </style>
 </head>
-<body class="min-h-screen text-slate-100 selection:bg-green-500 selection:text-white relative">
+<body class="min-h-screen text-slate-100 selection:bg-green-500 selection:text-white">
 
-    <!-- Widget Profil Letterboxd -->
-    <div class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-[#2c3440] p-1.5 md:p-2 rounded-full border border-white/10 shadow-xl transition-all duration-300 hover:border-white/30">
-        <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-[#14181c] flex items-center justify-center overflow-hidden">
-            <img src="https://letterboxd.com/favicon.ico" alt="Lbx" class="w-4 h-4 md:w-5 md:h-5">
+    <div class="absolute top-4 right-4 z-50 flex items-center gap-3 bg-[#2c3440] p-2 pr-4 rounded-full border border-white/10 shadow-xl transition-all duration-300 hover:border-white/30">
+        <div class="w-8 h-8 rounded-full bg-[#14181c] flex items-center justify-center overflow-hidden">
+            <img src="https://letterboxd.com/favicon.ico" alt="Lbx" class="w-5 h-5">
         </div>
-        <input type="text" id="lbxUsername" placeholder="Pseudo Letterboxd..." class="bg-transparent text-white text-xs md:text-sm w-28 md:w-36 outline-none placeholder-slate-500 px-1" onkeypress="if(event.key === 'Enter') fetchWatchedCount()">
-        <button onclick="fetchWatchedCount()" class="bg-green-600 text-white rounded-full p-1 w-6 h-6 md:w-7 md:h-7 flex items-center justify-center hover:bg-green-500 transition-colors shadow-lg" title="Actualiser le profil">
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-        </button>
-        <div id="watchedCountDisplay" class="hidden text-xs md:text-sm font-bold text-green-400 px-3 border-l border-white/20 whitespace-nowrap">
-            <span id="watchedCountText">...</span> <span class="text-slate-400 font-normal text-[10px] md:text-xs uppercase tracking-wider ml-1">Films vus</span>
+        <div class="flex flex-col">
+            <span class="text-white text-xs font-bold leading-none mb-1" id="lbxUsernameDisplay">...</span>
+            <span id="lbxWatchedCount" class="text-green-500 text-[10px] font-mono leading-none flex items-center gap-1">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </span>
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto px-4 pt-20 pb-32 min-h-screen flex flex-col items-center">
+    <div class="max-w-5xl mx-auto px-4 pt-8 pb-32 min-h-screen flex flex-col items-center">
         
-        <!-- Header -->
-        <header class="flex flex-col items-center justify-center mb-8 mt-4 w-full relative">
-            <!-- Logo Cliquable -->
-            <div onclick="if(watchlist.length > 0) pickRandomMovies()" title="Relancer le tirage"
-                 class="mb-4 rounded-full overflow-hidden w-24 h-24 shadow-lg shadow-black/50 border border-white/5 bg-[#14181c] cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group relative">
+        <header class="flex flex-col items-center justify-center mb-8 mt-4 w-full">
+            <div onclick="if(watchlist.length > 0) resetAndShowControls()" title="Retour au menu"
+                 class="mb-4 rounded-full overflow-hidden w-24 h-24 shadow-lg shadow-black/50 border border-white/5 bg-[#14181c] cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group">
                 <img src="https://i.imgur.com/Cz0LzIT.png" alt="Logo CinémAzard" class="w-full h-full object-cover group-hover:brightness-110 transition-all">
-                <div id="searchingOverlay" class="absolute inset-0 bg-black/60 flex items-center justify-center hidden rounded-full">
-                    <i class="fa-solid fa-dice fa-spin text-green-500 text-2xl"></i>
-                </div>
             </div>
             
             <h1 class="cinema-title text-5xl md:text-7xl font-bold bg-clip-text text-transparent mb-2 text-center"
@@ -183,86 +165,69 @@
             <p class="text-slate-400 text-sm animate-pulse">Chargement de la Watchlist...</p>
         </div>
 
-        <!-- Zone de Contrôles (Menu Principal) -->
-        <div id="controlsArea" class="hidden glass-panel rounded-lg p-6 md:p-8 shadow-xl mb-10 max-w-2xl w-full text-center transition-all duration-300 animate-fade-in">
+        <div id="controlsArea" class="hidden glass-panel rounded-lg p-6 md:p-8 shadow-xl mb-10 max-w-lg w-full text-center transition-all duration-300 animate-fade-in">
             <div class="flex items-center justify-center gap-2 text-green-400 mb-6 text-xs font-small">
                 <i class="fa-solid fa-check-circle"></i>
                 <span id="movieCount">Liste chargée</span>
             </div>
 
-            <div class="space-y-6 max-w-lg mx-auto">
-                
-                <!-- Filtres Grille -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="max-w-sm mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     <!-- Filtre Année -->
-                    <div class="text-left bg-[#14181c] p-4 rounded-lg border border-white/5 relative group hover:border-white/20 transition-colors">
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2"><i class="fa-regular fa-calendar mr-2"></i>Année</label>
-                        <select id="yearSelect" class="w-full bg-[#2c3440] border border-[#456] text-white text-sm rounded-md p-3 cursor-pointer hover:bg-[#343e4d] transition-colors focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none">
-                            <option value="all">Toutes les années</option>
+                    <div class="text-left bg-[#14181c] p-3 rounded-lg border border-white/5">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Année</label>
+                        <select id="yearSelect" class="w-full bg-[#2c3440] border border-[#456] text-white text-sm rounded-md p-2 cursor-pointer hover:bg-[#343e4d] transition-colors focus:ring-1 focus:ring-green-500 outline-none">
+                            <option value="all">Toutes</option>
                         </select>
                     </div>
-
+                    
                     <!-- Filtre Genre -->
-                    <div class="text-left bg-[#14181c] p-4 rounded-lg border border-white/5 relative group hover:border-white/20 transition-colors">
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2"><i class="fa-solid fa-masks-theater mr-2"></i>Genre</label>
-                        <select id="genreSelect" class="w-full bg-[#2c3440] border border-[#456] text-white text-sm rounded-md p-3 cursor-pointer hover:bg-[#343e4d] transition-colors focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none">
-                            <option value="all">Tous les genres</option>
-                            <option value="loading" disabled>Chargement des genres...</option>
+                    <div class="text-left bg-[#14181c] p-3 rounded-lg border border-white/5">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Genre</label>
+                        <select id="genreSelect" class="w-full bg-[#2c3440] border border-[#456] text-white text-sm rounded-md p-2 cursor-pointer hover:bg-[#343e4d] transition-colors focus:ring-1 focus:ring-green-500 outline-none">
+                            <option value="all">Tous</option>
                         </select>
                     </div>
                 </div>
                 
-                <!-- Bouton Tirage -->
                 <button onclick="pickRandomMovies()" id="classicBtn"
-                    class="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-green-900/30 transform hover:scale-105 active:scale-95 uppercase tracking-wide text-lg">
+                    class="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-3 px-6 rounded-md transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-900/30 transform hover:scale-105 active:scale-95 uppercase tracking-wide">
                     <span>Tirer un film au sort</span>
-                    <i class="fa-solid fa-dice text-xl"></i>
+                    <i class="fa-solid fa-dice"></i>
                 </button>
+
+                <!-- Message d'erreur intégré -->
+                <div id="noResultError" class="hidden mt-4 bg-red-900/40 border border-red-500/30 rounded p-2 text-red-200 text-xs text-center transition-all"></div>
             </div>
         </div>
         
         <div id="errorMsg" class="hidden mt-4 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-200 text-center max-w-lg mx-auto"></div>
 
-        <!-- Zone des Résultats -->
         <div id="resultsArea" class="hidden flex-grow flex flex-col items-center w-full">
             
-            <!-- Titre "Ticket Sélectionné" -->
             <div class="text-center mb-6 z-10 relative">
-                <h2 class="text-xl font-bold text-green-500 mb-1">
-                    Ticket Sélectionné
-                </h2>
+                <h2 class="text-xl font-bold text-green-500 mb-1">Ticket Sélectionné</h2>
                 <p id="filterDisplay" class="text-xs text-slate-400 font-mono mb-4">Bonne séance à toi!</p>
             </div>
 
-            <!-- MENU FILTRES & RELANCE (Vue Résultat) -->
-            <div class="w-full max-w-2xl px-4 mb-8 animate-fade-in z-20 relative bg-[#1a2027] p-4 rounded-2xl border border-white/5 shadow-xl">
-                <div class="flex flex-col md:flex-row gap-3">
-                    <div class="flex-1 flex gap-2">
-                        <select id="resultYearSelect" class="w-1/2 h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl py-3 px-3 appearance-none cursor-pointer transition-colors focus:ring-1 focus:ring-green-500 outline-none truncate">
-                            <option value="all">Toutes années</option>
-                        </select>
-                        <select id="resultGenreSelect" class="w-1/2 h-full bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-sm rounded-xl py-3 px-3 appearance-none cursor-pointer transition-colors focus:ring-1 focus:ring-green-500 outline-none truncate">
-                            <option value="all">Tous genres</option>
-                        </select>
-                    </div>
-                    <button onclick="pickRandomMovies()" class="w-full md:w-auto bg-[#2c3440] hover:bg-slate-700 text-white font-semibold py-3 px-6 rounded-xl border border-[#456] transition-all shadow-md flex justify-center items-center gap-2 whitespace-nowrap active:scale-95">
-                        <i class="fa-solid fa-rotate-right"></i> Relancer
-                    </button>
-                </div>
+            <!-- Barre de relance rapide -->
+            <div class="w-full max-w-lg px-4 mb-8 animate-fade-in z-20 relative flex gap-2">
+                <select id="resultYearSelect" class="w-1/2 bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-xs rounded-lg py-2 px-3 cursor-pointer shadow-lg outline-none">
+                    <option value="all">Toutes Années</option>
+                </select>
+                <select id="resultGenreSelect" class="w-1/2 bg-[#2c3440] hover:bg-[#343e4d] border border-[#456] text-white text-xs rounded-lg py-2 px-3 cursor-pointer shadow-lg outline-none">
+                    <option value="all">Tous Genres</option>
+                </select>
+                <button onclick="pickRandomMovies()" class="bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-4 py-2 shadow-lg transition-colors" title="Relancer">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
             </div>
 
             <!-- Fente + Conteneur Ticket -->
             <div class="slot-machine-container">
                 <div class="slot-opening"></div>
-                <!-- Indicateur de recherche -->
-                <div id="searchIndicator" class="hidden flex-col items-center mt-12 z-40">
-                    <div class="loader mb-4 !border-l-blue-400 w-12 h-12 !border-[4px]"></div>
-                    <p class="text-blue-300 text-sm font-mono tracking-widest uppercase animate-pulse">Recherche dans la liste...</p>
-                </div>
-                <!-- Grille Ticket -->
-                <div id="movieGrid" class="flex justify-center w-full pt-4"></div>
+                <div id="movieGrid" class="flex flex-col items-center justify-center w-full pt-4"></div>
             </div>
-
         </div>
 
         <!-- Footer -->
@@ -276,98 +241,75 @@
         const CURRENT_YEAR = new Date().getFullYear();
         const TMDB_API_KEY = '91ff43ba698cce948e8dd82332a6ed99';
         const CSV_FILENAME = 'watchlist.csv'; 
-        const DEFAULT_USERNAME = 'kryptonson'; // <-- Insère ton pseudo Letterboxd ici entre les guillemets
+        
+        // PSEUDO PAR DÉFAUT INTÉGRÉ ICI
+        const DEFAULT_USERNAME = 'kryptonson';
 
         // ETAT (STATE)
         let watchlist = [];
-        let tmdbGenres = []; // Stockage des genres officiels
+        let tmdbGenres = []; 
         let currentMovieData = null; 
 
         // --- DEMARRAGE ---
         window.onload = function() {
+            // Afficher le pseudo par défaut immédiatement
+            document.getElementById('lbxUsernameDisplay').textContent = DEFAULT_USERNAME;
+            
             autoLoadCSV();
             fetchTMDBGenres();
-            
-            // Restauration du pseudo utilisateur ou utilisation du pseudo par défaut
-            const savedUser = localStorage.getItem('lbxUsername') || DEFAULT_USERNAME;
-            if(savedUser && savedUser !== 'kryptonson') {
-                document.getElementById('lbxUsername').value = savedUser;
-                fetchWatchedCount();
-            }
+            fetchWatchedCount(DEFAULT_USERNAME);
         };
 
-        // --- PROFIL UTILISATEUR (Compteur de films) ---
-        async function fetchWatchedCount() {
-            const input = document.getElementById('lbxUsername');
-            const username = input.value.trim();
-            if(!username) return;
-            
-            // Sauvegarde locale
-            localStorage.setItem('lbxUsername', username);
-
-            const display = document.getElementById('watchedCountDisplay');
-            const textEl = document.getElementById('watchedCountText');
-            
-            display.classList.remove('hidden');
-            textEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-slate-400"></i>';
-
+        /* Récupère le nombre de films vus sur le profil public Letterboxd */
+        async function fetchWatchedCount(username) {
+            const display = document.getElementById('lbxWatchedCount');
             try {
-                // Utilisation d'un proxy pour éviter le blocage CORS
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://letterboxd.com/${username}/`)}`;
-                const response = await fetch(proxyUrl);
+                // Utilisation d'un proxy pour contourner les restrictions CORS
+                const url = `https://letterboxd.com/${username}/`;
+                const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                const response = await fetch(proxy);
                 const data = await response.json();
-
-                // Regex pour trouver le nombre de films dans le HTML du profil
-                // On cherche le lien menant aux films avec la classe tooltip contenant le chiffre
-                const regex = new RegExp(`href="/${username.toLowerCase()}/films/".*?<span class="value">([\\d,]+)</span>`, 'is');
-                const match = data.contents.match(regex);
-
-                if(match && match[1]) {
-                    textEl.textContent = match[1];
+                
+                // Extraction du compteur via une expression régulière
+                const match = data.contents.match(/<h4 class="profile-statistic statistic">.*?<span class="value">([\d,]+)<\/span>.*?Films/is) 
+                           || data.contents.match(/href="\/[^\/]+\/films\/".*?<span class="value">([\d,]+)<\/span>/is);
+                
+                if (match && match[1]) {
+                    display.innerHTML = `${match[1]} <i class="fa-solid fa-eye ml-1"></i>`;
                 } else {
-                    textEl.textContent = "N/A";
-                    textEl.title = "Profil privé ou introuvable";
+                    display.innerHTML = `? <i class="fa-solid fa-eye ml-1"></i>`;
                 }
             } catch (error) {
-                console.error("Erreur profil:", error);
-                textEl.textContent = "Err";
+                console.error("Erreur stats Letterboxd", error);
+                display.innerHTML = `Err <i class="fa-solid fa-eye ml-1"></i>`;
             }
         }
 
-        // --- CHARGEMENT DES GENRES TMDB ---
+        /* Récupère la liste officielle des genres chez TMDB */
         async function fetchTMDBGenres() {
             try {
                 const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_API_KEY}&language=fr-FR`;
-                const res = await fetch(url);
-                const data = await res.json();
-                if(data.genres) {
-                    tmdbGenres = data.genres;
-                    populateGenreSelects();
-                }
+                const response = await fetch(url);
+                const data = await response.json();
+                tmdbGenres = data.genres;
+                
+                // Remplissage des menus déroulants
+                const genreSelects = [document.getElementById('genreSelect'), document.getElementById('resultGenreSelect')];
+                let options = '<option value="all">Tous Genres</option>';
+                
+                // Trier les genres par ordre alphabétique
+                tmdbGenres.sort((a, b) => a.name.localeCompare(b.name)).forEach(g => {
+                    options += `<option value="${g.id}">${g.name}</option>`;
+                });
+                
+                genreSelects.forEach(select => {
+                    if (select) select.innerHTML = options;
+                });
             } catch (e) {
-                console.error("Impossible de charger les genres", e);
-                const sel1 = document.getElementById('genreSelect');
-                if(sel1) sel1.innerHTML = '<option value="all">Genres indisponibles</option>';
+                console.error("Erreur récupération genres TMDB", e);
             }
         }
 
-        function populateGenreSelects() {
-            const selects = [document.getElementById('genreSelect'), document.getElementById('resultGenreSelect')];
-            let optionsHtml = '<option value="all"> Tous les genres</option>';
-            
-            // Tri alphabétique des genres
-            const sortedGenres = [...tmdbGenres].sort((a, b) => a.name.localeCompare(b.name));
-            
-            sortedGenres.forEach(g => {
-                optionsHtml += `<option value="${g.id}">${g.name}</option>`;
-            });
-
-            selects.forEach(select => {
-                if(select) select.innerHTML = optionsHtml;
-            });
-        }
-
-        // --- CHARGEMENT WATCHLIST ---
         async function autoLoadCSV() {
             const loader = document.getElementById('initLoader');
             const controls = document.getElementById('controlsArea');
@@ -375,8 +317,9 @@
 
             try {
                 const response = await fetch(CSV_FILENAME);
-                if (!response.ok) throw new Error(`Impossible de trouver le fichier "${CSV_FILENAME}".`);
-                
+                if (!response.ok) {
+                    throw new Error(`Impossible de trouver le fichier "${CSV_FILENAME}".`);
+                }
                 const text = await response.text();
                 parseCSV(text);
                 
@@ -390,7 +333,7 @@
                     <div class="flex flex-col items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-2xl text-red-400"></i>
                         <span class="font-bold">Erreur de chargement</span>
-                        <span>Impossible de lire <code>${CSV_FILENAME}</code>.</span>
+                        <span>Impossible de lire le fichier <code>${CSV_FILENAME}</code>.</span>
                     </div>
                 `;
                 errorMsg.classList.remove('hidden');
@@ -418,8 +361,10 @@
             
             if (result.length > 0) {
                 watchlist = result;
-                document.getElementById('movieCount').textContent = `${result.length} films dans la liste`;
+                document.getElementById('movieCount').textContent = `${result.length} films dans votre liste`;
                 populateYearSelect(result);
+            } else {
+                throw new Error("CSV vide ou mal formaté.");
             }
         }
 
@@ -427,204 +372,213 @@
             const uploadSelect = document.getElementById('yearSelect');
             const resultSelect = document.getElementById('resultYearSelect');
             
-            const htmlOptions = '<option value="all"> Toutes les années</option>';
+            const htmlOptions = '<option value="all">Toutes Années</option>';
             const years = [...new Set(movies.map(m => m.Year))].filter(y => !isNaN(y) && y <= CURRENT_YEAR).sort((a, b) => b - a);
             
             let optionsStr = htmlOptions;
-            years.forEach(year => { optionsStr += `<option value="${year}">${year}</option>`; });
+            years.forEach(year => {
+                optionsStr += `<option value="${year}">${year}</option>`;
+            });
 
             uploadSelect.innerHTML = optionsStr;
             resultSelect.innerHTML = optionsStr; 
         }
 
-        // --- LOGIQUE DU TIRAGE AU SORT ---
+        function resetAndShowControls() {
+            document.getElementById('resultsArea').classList.add('hidden');
+            document.getElementById('controlsArea').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showMessage(msg) {
+            const errDiv = document.getElementById('noResultError');
+            errDiv.textContent = msg;
+            errDiv.classList.remove('hidden');
+            setTimeout(() => errDiv.classList.add('hidden'), 4000);
+        }
+
         async function pickRandomMovies() {
             const isResultView = !document.getElementById('resultsArea').classList.contains('hidden');
-            
-            // Récupération des filtres actuels
             const yearSelectId = isResultView ? 'resultYearSelect' : 'yearSelect';
             const genreSelectId = isResultView ? 'resultGenreSelect' : 'genreSelect';
             
             const year = document.getElementById(yearSelectId).value;
             const genreId = document.getElementById(genreSelectId).value;
             
-            // Synchronisation des menus déroulants
-            document.getElementById('yearSelect').value = year;
-            document.getElementById('resultYearSelect').value = year;
-            document.getElementById('genreSelect').value = genreId;
-            document.getElementById('resultGenreSelect').value = genreId;
+            // Synchronisation des sélecteurs
+            if (isResultView) {
+                document.getElementById('yearSelect').value = year;
+                document.getElementById('genreSelect').value = genreId;
+            } else {
+                document.getElementById('resultYearSelect').value = year;
+                document.getElementById('resultGenreSelect').value = genreId;
+            }
 
-            // Filtrage initial (Année)
+            // Filtrage basique (Année)
             let candidates = watchlist.filter(m => (!m.Year || m.Year <= CURRENT_YEAR));
             if (year !== 'all') candidates = candidates.filter(m => m.Year == year);
 
             if (candidates.length === 0) { 
-                alert("Aucun film trouvé pour cette année dans votre liste."); 
+                showMessage("Aucun film trouvé pour cette année."); 
                 return; 
             }
 
-            // --- UI: Mode Recherche ---
+            // Basculer l'interface
             document.getElementById('controlsArea').classList.add('hidden');
             document.getElementById('resultsArea').classList.remove('hidden');
+            
             const grid = document.getElementById('movieGrid');
-            const searchIndicator = document.getElementById('searchIndicator');
-            const overlay = document.getElementById('searchingOverlay');
             
-            grid.innerHTML = '';
-            searchIndicator.classList.remove('hidden');
-            searchIndicator.classList.add('flex');
-            overlay.classList.remove('hidden');
-
-            if(window.innerWidth < 768) {
-                setTimeout(() => document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-            }
-
-            // --- RECHERCHE DU FILM (avec vérification du Genre si demandé) ---
-            // On mélange la liste pour tenter de trouver un film qui correspond au genre
-            const shuffled = [...candidates].sort(() => 0.5 - Math.random());
-            let foundMovie = null;
-            let foundTMDBData = null;
-            
-            // Nombre de tentatives max pour éviter de bloquer le navigateur si le genre n'existe pas dans la liste
-            const maxAttempts = Math.min(shuffled.length, 30); 
-
-            for (let i = 0; i < maxAttempts; i++) {
-                const candidate = shuffled[i];
-                let searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(candidate.Name)}&language=fr-FR&include_adult=false`;
-                if (candidate.Year) searchUrl += `&year=${candidate.Year}`;
-
-                try {
-                    const res = await fetch(searchUrl);
-                    const data = await res.json();
-                    
-                    if (data.results && data.results.length > 0) {
-                        const tmdbMatch = data.results[0];
-                        
-                        // Si "Tous les genres" OU que le film possède l'ID du genre cherché
-                        if (genreId === 'all' || (tmdbMatch.genre_ids && tmdbMatch.genre_ids.includes(parseInt(genreId)))) {
-                            foundMovie = candidate;
-                            foundTMDBData = tmdbMatch;
-                            break; // Film trouvé ! On arrête la boucle.
-                        }
-                    } else if (genreId === 'all') {
-                        // Fallback: Si pas de données TMDB mais aucun filtre de genre demandé, on prend le film quand même.
-                        foundMovie = candidate;
-                        break;
-                    }
-                } catch (e) {
-                    console.warn("Erreur TMDB pour le film:", candidate.Name);
-                    // En cas d'erreur API, si on n'a pas de filtre de genre, on prend le film par défaut
-                    if(genreId === 'all') { foundMovie = candidate; break; }
-                }
-            }
-
-            // Fin de la recherche UI
-            searchIndicator.classList.add('hidden');
-            searchIndicator.classList.remove('flex');
-            overlay.classList.add('hidden');
-
-            if (!foundMovie) {
-                grid.innerHTML = `
-                    <div class="bg-red-900/40 border border-red-500/50 p-6 rounded-xl text-center max-w-sm w-full mt-4 animate-fade-in">
-                        <i class="fa-solid fa-ghost text-4xl text-red-400 mb-3 opacity-80"></i>
-                        <p class="text-red-200 text-sm">Aucun film de ce genre trouvé dans l'échantillon testé (parmi votre année sélectionnée).</p>
-                        <p class="text-red-300 text-xs mt-2 italic">Essayez de relancer ou de changer vos filtres !</p>
-                    </div>`;
+            // Si pas de genre sélectionné, tirage immédiat (Rapide)
+            if (genreId === 'all') {
+                const shuffled = [...candidates].sort(() => 0.5 - Math.random());
+                renderTicket(shuffled[0], 0);
                 return;
             }
 
-            currentMovieData = { ...foundMovie, synopsis: "Chargement..." }; 
+            // Si un genre est sélectionné, on doit interroger TMDB pour vérifier (Machine à sous)
+            grid.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-10 text-center animate-pulse">
+                    <div class="loader mb-4"></div>
+                    <p class="text-slate-400 text-sm">Recherche d'une correspondance...</p>
+                    <p class="text-[10px] text-slate-500 mt-2">(On fouille la base de données TMDB)</p>
+                </div>
+            `;
             
-            // Génération du Ticket
-            const ticket = createTicket(foundMovie, 0);
-            grid.appendChild(ticket);
-            
-            // Hydratation du ticket avec les données TMDB déjà trouvées (ou fallback)
-            hydrateTicketData(foundMovie, foundTMDBData, 0);
+            const shuffled = [...candidates].sort(() => 0.5 - Math.random());
+            let foundMovie = null;
+
+            // On vérifie les films un par un jusqu'à trouver le bon genre (limité à 15 essais pour ne pas bloquer)
+            for (let i = 0; i < Math.min(shuffled.length, 15); i++) { 
+                const movie = shuffled[i];
+                const hasGenre = await checkMovieGenre(movie, genreId);
+                if (hasGenre) {
+                    foundMovie = movie;
+                    break;
+                }
+            }
+
+            if (foundMovie) {
+                renderTicket(foundMovie, 0);
+            } else {
+                grid.innerHTML = `
+                    <div class="bg-slate-800/80 p-6 rounded-xl border border-red-500/30 max-w-sm text-center">
+                        <i class="fa-solid fa-face-frown text-3xl text-red-400 mb-3"></i>
+                        <h3 class="text-white font-bold mb-2">Tirage difficile</h3>
+                        <p class="text-sm text-slate-300">Nous n'avons pas trouvé de film de ce genre dans cet échantillon.</p>
+                        <button onclick="pickRandomMovies()" class="mt-4 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded transition-colors text-sm">
+                            Relancer la machine
+                        </button>
+                    </div>
+                `;
+            }
         }
 
-        function generateRandomBarcode() {
-            let result = '';
-            for (let i = 0; i < 12; i++) result += Math.floor(Math.random() * 10);
-            return result;
+        async function checkMovieGenre(movie, targetGenreId) {
+            try {
+                let searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(movie.Name)}&language=fr-FR&include_adult=false`;
+                if (movie.Year) searchUrl += `&year=${movie.Year}`;
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    const bestMatch = data.results[0];
+                    return bestMatch.genre_ids.includes(parseInt(targetGenreId));
+                }
+                return false;
+            } catch (e) {
+                return false;
+            }
         }
 
-        function createTicket(movie, index) {
+        function renderTicket(movie, index) {
+            currentMovieData = { ...movie, synopsis: "Chargement..." }; 
+            const grid = document.getElementById('movieGrid');
+            grid.innerHTML = '';
+            
             const ticket = document.createElement('div');
             ticket.className = 'ticket printing group';
             
             const gradients = [ 
                 'from-purple-800 to-blue-900', 
                 'from-blue-800 to-slate-900', 
-                'from-indigo-800 to-emerald-900',
-                'from-slate-900 to-purple-900',
-                'from-gray-800 to-orange-900'
+                'from-indigo-800 to-purple-900',
+                'from-slate-900 to-purple-900'
             ];
             const grad = gradients[Math.floor(Math.random() * gradients.length)];
-            const randomCode = generateRandomBarcode();
+            const randomCode = Math.floor(Math.random() * 1000000000000).toString().padStart(12, '0');
 
             ticket.innerHTML = `
                 <div class="relative h-[65%] bg-gradient-to-br ${grad} overflow-hidden min-h-[400px]">
-                    <img id="img-${index}" src="" crossorigin="anonymous" alt="Affiche" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 z-10 shadow-[inset_0_-20px_50px_rgba(0,0,0,0.8)]">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-15"></div>
+                    <img id="img-${index}" src="" crossorigin="anonymous" alt="Affiche" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 z-10">
                     <div class="absolute inset-0 flex items-center justify-center p-6 text-center z-0">
                         <div><i class="fa-solid fa-film text-6xl text-white/10 mb-4 block"></i><h3 class="text-2xl font-bold text-white/40">${movie.Name}</h3></div>
                     </div>
                     <div class="absolute top-4 left-4 z-20">
-                        <span class="px-3 py-1.5 bg-black/60 backdrop-blur-md text-xs font-bold uppercase tracking-wider rounded text-white border border-white/20 shadow-lg"><i class="fa-solid fa-ticket mr-2 text-green-400"></i>Salle 42</span>
+                        <span class="px-3 py-1.5 bg-black/60 backdrop-blur-md text-xs font-bold uppercase tracking-wider rounded text-white border border-white/20 shadow-lg">Salle 42</span>
                     </div>
                 </div>
                 <div class="perforation"></div>
                 <div class="h-[35%] bg-white p-8 flex flex-col justify-between relative pt-10">
                     <div>
-                        <div class="flex justify-between items-start mb-3 gap-2">
-                            <a href="${movie['Letterboxd URI']}" target="_blank" class="font-bold text-2xl leading-tight text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors" title="Ouvrir sur Letterboxd">
+                        <div class="flex justify-between items-start mb-3">
+                            <a href="${movie['Letterboxd URI']}" target="_blank" class="font-bold text-2xl leading-tight text-gray-900 line-clamp-2 hover:text-purple-600 transition-colors" title="Voir sur Letterboxd">
                                 ${movie.Name}
                             </a>
-                            <span class="text-white font-mono text-base px-3 py-1 bg-[#14181c] rounded-lg whitespace-nowrap shadow-md">${movie.Year || 'N/A'}</span>
+                            <span class="text-white font-mono text-base px-3 py-1 bg-black rounded-lg ml-2 whitespace-nowrap shadow-md">${movie.Year || 'N/A'}</span>
                         </div>
                         
-                        <div class="relative min-h-[4rem] group/desc mt-2">
+                        <div class="relative min-h-[4rem] group/desc">
                             <p id="desc-${index}" class="text-sm text-gray-600 line-clamp-3 leading-relaxed cursor-help">
-                                Préparation du résumé...
+                                Chargement des infos TMDB...
                             </p>
                             <div id="full-desc-${index}" class="hidden group-hover/desc:block absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md p-4 shadow-xl border border-gray-200 rounded-lg z-50 max-h-[180px] overflow-y-auto text-sm text-gray-800 custom-scrollbar transform translate-y-2 transition-all">
-                                Préparation...
+                                Chargement...
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-center items-center mt-6 border-t border-gray-200 pt-5 opacity-80">
+                    <div class="flex justify-center items-center mt-6 border-t border-gray-200 pt-5">
                         <div class="flex-shrink-0">
                             <div class="barcode text-black select-none tracking-widest text-2xl">${randomCode}</div>
                         </div>
                     </div>
                 </div>
             `;
-            return ticket;
+            
+            grid.appendChild(ticket);
+            fetchMovieData(movie, index);
         }
 
-        function hydrateTicketData(movie, tmdbData, index) {
-            if (tmdbData) {
-                // On a déjà récupéré les données TMDB durant la phase de recherche !
-                if (tmdbData.poster_path) {
-                    const imageUrl = `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`;
-                    const imgEl = document.getElementById(`img-${index}`);
-                    if (imgEl) {
-                        imgEl.src = imageUrl;
-                        imgEl.onload = () => imgEl.classList.remove('opacity-0');
+        async function fetchMovieData(movie, index) {
+            try {
+                let searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(movie.Name)}&language=fr-FR&include_adult=false`;
+                if (movie.Year) searchUrl += `&year=${movie.Year}`;
+
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    const bestMatch = data.results[0]; 
+                    
+                    if (bestMatch.poster_path) {
+                        const imageUrl = `https://image.tmdb.org/t/p/w500${bestMatch.poster_path}`;
+                        const imgEl = document.getElementById(`img-${index}`);
+                        if (imgEl) {
+                            imgEl.src = imageUrl;
+                            imgEl.onload = () => imgEl.classList.remove('opacity-0');
+                        }
                     }
+
+                    const overview = bestMatch.overview || "Résumé non disponible en français.";
+                    const descEl = document.getElementById(`desc-${index}`);
+                    const fullDescEl = document.getElementById(`full-desc-${index}`);
+                    
+                    if (descEl) { descEl.textContent = overview; }
+                    if (fullDescEl) { fullDescEl.textContent = overview; }
+
+                } else {
+                    fetchMovieDataLegacy(movie["Letterboxd URI"], index);
                 }
-
-                const overview = tmdbData.overview || "Résumé non disponible en français sur la base de données (TMDB).";
-                const descEl = document.getElementById(`desc-${index}`);
-                const fullDescEl = document.getElementById(`full-desc-${index}`);
-                
-                if (descEl) { descEl.textContent = overview; }
-                if (fullDescEl) { fullDescEl.textContent = overview; }
-                if (currentMovieData) currentMovieData.synopsis = overview;
-
-            } else {
-                // Fallback si TMDB n'a rien trouvé du tout lors de la recherche
+            } catch (error) {
                 fetchMovieDataLegacy(movie["Letterboxd URI"], index);
             }
         }
@@ -657,7 +611,6 @@
                 
                 if (descEl) { descEl.textContent = synopsis; }
                 if (fullDescEl) fullDescEl.textContent = synopsis;
-                if (currentMovieData) currentMovieData.synopsis = synopsis;
                 
             } catch { 
                  const d = document.getElementById(`desc-${index}`); if(d) d.textContent = "Info indisponible."; 
